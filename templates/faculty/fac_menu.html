@@ -1,0 +1,215 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title> {% block title %} {% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
+    integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css?family=Source+Serif+Pro:400,600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="fonts/icomoon/style.css">
+
+    <link rel="stylesheet" href="{%static 'sidebar_css/owl.carousel.min.css' %}">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{%static 'sidebar_css/bootstrap.min.css' %}">
+    
+    <!-- Style -->
+    <link rel="stylesheet" href="{%static 'sidebar_css/style.css' %}">
+
+    {% block link %} {% endblock %}
+    
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+          }
+       body {
+              overflow-x:hidden;
+              }
+      
+          .nav_bg {
+            background-color: #1DB954;
+          }
+          
+    </style>
+    {% block style %} {% endblock %}
+  </head>
+  <body>
+    <!-- Top Bar -->
+    <nav class="navbar navbar-expand-lg bg-light">
+        <a class="navbar-brand" href="/fac_dashboard/">
+            <img src="{% static 'logo/zu_logo_rounded2.jpg'%}" width="30" height="30"
+                class="d-inline-block align-top rounded-circle" alt="Logo">
+          <span style="color:green;"><b>Ziauddin University</b> </span>
+        </a>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle"  id="navbarDropdown" role="button" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                    {% comment %} <img src="https://via.placeholder.com/40x40" width="30" height="30"
+                        class="d-inline-block align-top rounded-circle" alt="Profile Picture"> {% endcomment %}
+                         <img src="{{fac_data.0.fac_img.url}}" alt="{{fac_data.0.fac_name}}" class="img-fluid mt-2 rounded-circle" style="width:25px">
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                  {%if fac_data%}
+                  <a class="dropdown-item" href="/fac_dashboard/fac_profile"><i class="fa-sharp fa-solid fa-address-card"></i> Profile </a>
+                  <a class="dropdown-item" href="/logout/"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+                  {%else%}
+                  <a class="dropdown-item" href="/logout/"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+                </div>
+                {%endif%}
+            </li>
+        </ul>
+    </nav>
+
+    <aside class="sidebar">
+      <div class="toggle">
+        <a href="#" class="burger js-menu-toggle" data-toggle="collapse" data-target="#main-navbar">
+              <span></span>
+            </a>
+      </div>
+      <div class="side-inner">
+        {% if fac_data %}
+        <div class="profile">
+            <img src="{{fac_data.0.fac_img.url}}" alt="{{fac_data.0.fac_name}}" class="img-fluid mt-2 rounded-circle">
+            <h3 class="name" style="font-family: 'Lilita One', cursive;">{{fac_data.0.fac_name}}</h3>
+            <h6 class="text-muted mt-1" style="font-size:15px; font-family: 'Lilita One', cursive;">{{ fac_data.0.dep }} Department </h6>
+            {% comment %} <h6 class="text-muted"style="font-size:13px;">{{ fac_data.0.fac_email }}</h6> {% endcomment %}
+        </div>
+
+     
+        <div class="nav-menu">
+            <ul>
+                <li class="nav-item {% if request.path == '/fac_dashboard/' %}active{% endif %}">
+                  <a class="nav-link" href="/fac_dashboard/"><i class="fas fa-home"></i>&nbsp Dashboard</a>
+                </li>
+
+                <li class="nav-item dropdown {% if request.path == '/fac_dashboard/create_classroom' or request.path == '/fac_dashboard/classroom_dashboard' %}active{% endif %}">
+                    <a class="nav-link dropdown-toggle" href="#" id="classroomDropdown" role="button" data-toggle="dropdown"
+                      aria-haspopup="true" aria-expanded="false"><i class="fa-sharp fa-solid fa-users"></i>&nbsp Classroom</a>
+                    <div class="dropdown-menu" aria-labelledby="classroomDropdown">
+                      <a class="dropdown-item" href="/fac_dashboard/create_classroom" data-toggle="modal" data-target="#exampleModal"><i class="fa-solid fa-plus"></i> Create Classroom</a>
+                      <a class="dropdown-item" href="/fac_dashboard/classroom_dashboard" style="white-space: nowrap;"><i class="fa fa-building-columns"></i> Classroom Dashboard</a>
+                    </div>
+                  </li>
+        
+                    <li class="nav-item {% if request.path == '/fac_dashboard/attendance/' %}active{% endif %}">
+                    <a class="nav-link" href="/fac_dashboard/attendance"><i class="fa-regular fa-calendar"></i> &nbsp Upload Attendance</a>
+                  </li>
+
+                  
+        
+                  <li class="nav-item dropdown {% if request.path == '/fac_dashboard/upload_result' %}active{% endif %}">
+                    <a class="nav-link dropdown-toggle" href="#" id="resultDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fa-solid fa-envelope-open-text"></i>&nbsp Upload Result
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="resultDropdown">
+                      <a class="dropdown-item" href="/fac_dashboard/add_clo">Add CLO's</a>
+                      <a class="dropdown-item" href="/fac_dashboard/map_clo_plo">Map CLO's PLO's</a>
+                      <a class="dropdown-item" href="/fac_dashboard/add_assessment_clos_plos">Add Assessment CLO's PLO's</a>
+                      <a class="dropdown-item" href="/fac_dashboard/upload_result">Upload Result</a>
+                     
+                    </div>
+                  </li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+    {%else%}
+    <div class="profile">
+        <img src="{%static 'user.png' %}" alt="Teacher name" class="img-fluid mt-2 ">
+        <h3 class="name">Teacher Name</h3>
+        <h6 class="text-muted mt-1">Department </h6>
+        <h6 class="text-muted">Email</h6>
+    </div>
+    <div class="nav-menu">
+        <ul>
+            <li class="nav-item {% if request.path == '/fac_dashboard/' %}active{% endif %}">
+              <a class="nav-link" href="/fac_dashboard/"><i class="fas fa-home"></i> Dashboard</a>
+            </li>
+           
+      </ul>
+    </div>
+  </div>
+</aside>
+{%endif%}
+
+<main>
+
+  <div class="container-fluid">
+    <div class="justify-content-center">
+
+      {%block body%} {%endblock%}
+    </div>
+  </div>
+
+</main>
+
+
+    <!--Modal-->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Create Classroom</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <form action="/fac_dashboard/create_classroom" method="POST">
+                {% csrf_token %}
+                  {{ form.as_p }}
+                  <div class="form-group">
+                    <label for="exampleInputEmail1">Classroom Name</label>
+                    <input type="name" name="classroom_name" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Classroom Name">
+                  
+                  </div>
+                  <div class="form-group">
+                    <label for="exampleInputPassword1">About The Classroom</label>
+                    <input type="text" name="classroom_desc" class="form-control" id="exampleInputPassword1" placeholder="Classroom Description">
+                  </div>
+                  <div class="form-group">
+                    <p class="text-muted">Note: You will see the class code in Classroom Dashboard</p>
+                    </div>
+          
+                  <button type="submit" class="btn btn-success">Create Classroom</button>
+                </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+   
+    <script src="{%static 'js/main.js' %}"></script>
+
+    {% block script%} {%endblock%}
+  </body>
+</html>

@@ -1,0 +1,39 @@
+{% extends 'student/stu_menu.html'%}
+
+{% block title%} Announcements {%endblock%}
+
+
+{%block body %}
+
+{%block style%}
+<style>   </style>
+{%endblock%}
+<div class="container-fluid">
+    <h2 class="text-center mt-4">Announcements</h2>
+    <hr>
+
+    <div class="row">
+
+      {% if announcements %}
+        {% for announcement in announcements %}
+          <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title">{{ announcement.ann_name }}</h5>
+                <p class="card-text">{{ announcement.ann_desc }}</p>
+                <p class="card-text"><small class="text-muted">{{ announcement.uploaded_at }}</small></p>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="col-md-12">
+          <p class="text-center">No announcements</p>
+        </div>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+{%endblock%}

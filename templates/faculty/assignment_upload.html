@@ -1,0 +1,187 @@
+{% extends 'faculty/fac_menu.html' %}
+{% load static %}
+
+{% block title %}{{classroom.class_name}}{% endblock%}
+
+{% block style%}
+<style>
+    /* Add some custom styling to the form */
+    form {
+        max-width: 500px;
+        margin: auto;
+    }
+    label, input {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    input[type="submit"] {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+    }
+    /* Add custom styling to the table */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+    th, td {
+        text-align: center;
+        padding: 8px;
+    }
+    th {
+        background-color: #4CAF50;
+        color: white;
+        white-space: nowrap;
+    }
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    .view_submission{
+        color:green; 
+     }
+     .view_submission:hover {
+         background-color: #1DB954;
+     }
+     
+    /* Media queries for responsiveness */
+    @media only screen and (max-width: 768px) {
+        form {
+            max-width: 100%;
+        }
+        input[type="submit"] {
+            font-size: 14px;
+        }
+        table {
+            font-size: 14px;
+        }
+    }
+    @media only screen and (max-width: 576px) {
+        form {
+            max-width: 100%;
+        }
+        input[type="submit"] {
+            font-size: 12px;
+        }
+        table {
+            font-size: 10px;
+        }
+        .card{
+            width:70%;
+        }
+       
+    }
+
+
+
+</style>
+{% endblock%}
+
+{% block body %}
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title text-center"><span style="color:green">{{ classroom.class_name }}</span> </br> <span style="color:green">Upload Assigment: </span> </h3>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-floating mb-3">
+                            <label for="assign_name">Assignment Title:</label>
+                            <input type="text" class="form-control" name="assign_name" id="assign_name" placeholder=" " required>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <label for="assign_desc">Assignment Description:</label>
+                            <textarea class="form-control" name="assign_desc" id="assign_desc" placeholder=" " required></textarea>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <label for="assign_marks">Assignment Total Marks:</label>
+                            <input type="number" step="0.01" class="form-control" name="assign_marks" id="assign_marks" placeholder=" " required>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <label for="assign_deadline">Assignment Due Date:</label>
+                            <input type="date" class="form-control"  name="assign_deadline" id="assign_deadline" placeholder=" " required>
+                        </div>
+                        <select name="classroom" id="classroom" hidden>
+                            <option value="{{ classroom.id }}" selected>{{ classroom.classroom_name }}</option>
+                        </select>
+                        <p class="text-muted"><i class="fas fa-lightbulb"></i> upload pdf </p>
+                        <div class="form-file mb-3">
+                            <input type="file" class="form-file-input" name="assign_file" id="assign_file" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Upload</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            {% comment %} <th>Description</th> {% endcomment %}
+                            {% comment %} <th>Assign File</th> {% endcomment %}
+                            <th>Marks</th>
+                            <th>Due Date</th>
+                            {% comment %} <th>Uploaded At</th> {% endcomment %}
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assignment in assignments %}
+                        <tr>
+                            <td>{{ assignment.assign_name }}</td>
+                            {% comment %} <td>{{ assignment.assign_desc }}</td> {% endcomment %}
+                            <td>{{ assignment.assign_marks }}</td>
+                            {% comment %} <td><a href="{{ assignment.assign_file.url }}" class="btn btn-success" download>Download</a></td> {% endcomment %}
+                            <td>{{ assignment.assign_deadline }}</td>
+                            {% comment %} <td>{{ assignment.uploaded_at }}</td> {% endcomment %}
+                            <td>
+                                <!-- Delete button -->
+                                <button type="button" class="btn btn-danger" data-toggle="modal"
+                                    data-target="#deleteLectureModal{{assignment.assign_id}}">Delete</button>
+                
+                                <!-- Modal pop-up -->
+                                <div class="modal fade" id="deleteLectureModal{{assignment.assign_id}}" tabindex="-1" role="dialog"
+                                    aria-labelledby="deleteLectureModalLabel{{assignment.assign_id}}" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="deleteLectureModalLabel{{assignment.assign_id}}">Delete</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete this lecture {{assignment.assign_name}}?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <form action="/fac_dashboard/delete_assignment/{{assignment.assign_id}}" method="POST">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </form>
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><a href="/fac_dashboard/view_assignment_submissions/{{assignment.assign_id}}"><button type="button" class="btn view_submission" >View Submissions</button></a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

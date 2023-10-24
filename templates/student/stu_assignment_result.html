@@ -1,0 +1,98 @@
+{% extends 'student/stu_menu.html' %}
+{% block title %} {{quizzes.0.classroom.class_name}}{% endblock %}
+{% block body %}
+{% block stlye  %}
+<style>
+/* Add custom styling to the table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+th, td {
+    text-align: left;
+    padding: 8px;
+}
+td{
+    white-space:nowrap;
+}
+th {
+    background-color: #4CAF50;
+    color: white;
+}
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+.view_submission{
+    color:green; 
+ }
+ .view_submission:hover {
+     background-color: #1DB954;
+     color:#fff
+ }
+/* Media queries for responsiveness */
+@media only screen and (max-width: 768px) {
+  table {
+        font-size: 14px;
+    }
+}
+@media only screen and (max-width: 576px) {
+   
+    table {
+        font-size: 8px;
+    }
+    .card{
+        width:90%;
+    }
+}
+</style>
+{% endblock  %}
+<!-- Table -->
+<div class="container">
+<div class="col-md-12">
+    <div class="row">
+        <div class="table-responsive">
+<table class="table">
+    <thead>
+        <tr>
+            <th>Student Name</th>
+            <th>Enrollment</th>
+            <th>Title</th>
+            <th>Total Marks</th>
+            <th>Obtained Marks</th>
+        </tr>
+    </thead>
+    <tbody>
+       {% if assignment_submissions %}
+        <tr>
+            <td>{{assignment_submissions.student.student_name}}</td>
+            <td>{{assignment_submissions.student.student_enroll_no}}</td>
+            <td>{{assignment_submissions.assign_name}}</td>
+            <td>{{assignment_submissions.assign_total_marks }}</td>
+            <td>{{assignment_submissions.assign_marks_obtained }}</td>
+        
+
+        {% else %}
+        <td style="color:red"></td>
+        <td style="color:red"></td>
+        <td style="color:red">Not Submitted</td>
+        <td style="color:red"></td>
+        <td style="color:red"></td>
+
+        {% endif %}
+            
+        </tr>
+
+        </tbody>
+    </div>
+    </table>
+
+                    
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

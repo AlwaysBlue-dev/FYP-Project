@@ -1,0 +1,379 @@
+{% extends 'faculty/fac_menu.html' %}
+{% load static %}
+
+{% block title %} Upload Result {% endblock %}
+
+{% block style %}
+<style>
+    .attendance-select {
+        --primary-color: #ffffff;
+        --background-color: #27ae60;
+        --background-color-selected: #e74c3c;
+        --font-size: 16px;
+        --border-radius: 8px;
+        --border-width: 2px;
+        --border-color: transparent;
+        --padding: 6px 16px;
+        --transition: all 0.3s ease-in-out;
+      
+        appearance: none;
+        background-color: var(--background-color);
+        border: var(--border-width) solid var(--border-color);
+        border-radius: var(--border-radius);
+        color: var(--primary-color);
+        cursor: pointer;
+        font-size: var(--font-size);
+        padding: var(--padding);
+        width: 80px;
+        height: 32px;
+        text-align: center;
+      }
+      
+      .attendance-select:focus {
+        border-color: #a6a6a6;
+        outline: none;
+      }
+      
+      .attendance-select option[value="P"] {
+        background-color: var(--background-color);
+      }
+      
+      .attendance-select option[value="A"] {
+        background-color: var(--background-color-selected);
+      }
+      
+      .attendance-select option:checked {
+        color: #ffffff;
+      }
+      
+      option{
+        background-color:#ffff !important;
+        color:black !important;
+      }
+      
+      /* Customize scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      
+      ::-webkit-scrollbar-track {
+        background: #1DB954;
+      }
+      
+      ::-webkit-scrollbar-thumb {
+        background-color: #111;
+        border-radius: 20px;
+        border: 3px solid #1DB954;
+      }
+      
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: #333;
+      }
+      .table-responsive {
+        max-height: 500px;
+        overflow-y: auto;
+        scrol
+      }
+
+</style>
+{% block link %} <link rel="stylesheet" href="{% static 'css/view_attendance.css'%}"> {% endblock %}
+{% endblock %}
+
+{% block body %}
+
+<div class='container'>
+    <div class="row justify-content-center">
+  
+          {% if messages %}
+          <div class="alert alert-danger mt-3">
+              <ul>
+                  {% for message in messages %}
+                      <h6 class="text-center text-danger">{{ message }}</h6>
+                  {% endfor %}
+              </ul>
+          </div>
+      {% endif %}
+
+          </div>
+        </div>
+      </div>
+      
+      <div class="container-fluid mt-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header m-auto">
+            <form method="get" action="/fac_dashboard/upload_result">
+              {% csrf_token %}
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputDepartment">Department</label>
+                        <select class="form-control" id="inputDepartment" name="department" required>
+                            <option value="">-- Select department --</option>
+                            {% for department in departments %}
+                            <option value="{{ department.dep_name }}" {% if department.dep_name == selected_department %}selected{% endif %}>{{ department.dep_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                
+                    <div class="form-group col-md-6">
+                      <label for="inputBatch">Programme</label>
+                      <select class="form-control" id="inputBatch" name="programme" required> 
+                          <option value="">-- Select programme --</option>
+                          {% for programme in programmes %}
+                          <option value="{{ programme.prog_name }}" {% if programme.prog_name == selected_programme %}selected{% endif %}>{{ programme.prog_name }}</option>
+                          {% endfor %}
+                      </select>
+                  </div>
+          
+                 
+                  <div class="form-group col-md-6">
+                    <label for="inputBatch">Batch</label>
+                    <select class="form-control" id="inputBatch" name="batch" required> 
+                        <option value="">-- Select batch --</option>
+                        {% for batch in batches %}
+                        
+                        <option value="{{ batch.batch }}" {% if batch.batch|add:0 == selected_batch|add:0 %}selected{% endif %}>{{ batch.batch }}</option>
+                      
+                        {% endfor %}
+                    </select>
+                </div>
+              
+                  <div class="form-group col-md-6">
+                    <label for="inputBatch">Shift</label>
+                    <select class="form-control" id="inputBatch" name="shift" required> 
+                        <option value="">-- Select shift --</option>
+                       
+                       {% if fac_job_details.0.time_shift == 'Morning & Evening' %}
+                        <option value="morning" {% if selected_shift == 'morning' %}selected{% endif %}>Morning</option>
+                        <option value="evening" {% if selected_shift == 'evening' %}selected{% endif %}>Evening</option>
+                      {% elif fac_job_details.0.time_shift == 'Morning' %}
+                       <option value="morning" selected>Morning</option>
+                        {%else%}
+                        <option value="evening" selected>Evening</option>
+                        {%endif%}
+                      
+                    </select>
+                </div>
+
+              
+                        <div class="form-group col-md-6">
+                          <label for="input-course" class="form-label">Course:</label>
+                          <select name="course" id="input-course" class="form-control custom-select" required>
+                            <option value="" selected>-- Select a course --</option>
+                            {% for course in assign_courses %}
+                              <option value="{{course.assign_course.course_name}}" {% if course.assign_course.course_name == selected_course_id %}selected{% endif %}>{{course.assign_course.course_name}}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                  
+                        <div class="form-group col-md-6"> 
+                          <label for="input-assessment-type" class="form-label">Assessment Type:</label>
+                          <select name="assessment_type" id="input-assessment-type" class="form-control custom-select" required>
+                            <option value="" selected >-- Select an assessment type --</option>
+                            <option value="Quiz"{% if selected_assessment_type_id == 'Quiz'%}selected{% endif %}>Quiz </option>
+                            <option value="Assignment"{% if selected_assessment_type_id == 'Assignment' %}selected{% endif %}>Assignment</option>
+                            <option value="Mid Term"{% if selected_assessment_type_id == 'Mid Term'%}selected{% endif %}>Mid Term</option>
+                            <option value="Final Term"{% if selected_assessment_type_id == 'Final Term' %}selected{% endif %}>Final Term</option>
+                          </select>
+                        </div>
+                        
+                       
+                </div>
+    
+                <button type="submit" class="btn btn-success">Filter</button>
+               <a href="/fac_dashboard/view_result">View Result</a>
+            </form>
+            
+          </div> 
+
+          {% if students and assessment_data %}
+          <form method="POST" action="">
+              {% csrf_token %}
+              <div class="card-body">
+                  <div class="table-responsive active-projects style-1 attendance-tbl">
+                      <h3 class="text-center">Student List </h3>
+                      <div class="tbl-caption text-center">
+                          {% comment %} <h4 class="heading mb-0">Attendance</h4> {% endcomment %}
+                      </div>
+                      <table id="attendance-tbl" class="table">
+                          <thead>
+                              <tr>
+                                  <th class="text-left">Student Info</th>
+                                  <th class="text-left">Assessment Name</th>
+                                  <th class="text-left">Mapped CLo's Plo's</th>
+                                  {%if selected_assessment_type_id == 'Quiz'%}
+                                  <th class="text-left">Total Quiz</th>
+                                  {%elif selected_assessment_type_id == 'Assignment'%}
+                                  <th class="text-left">Total Assignment</th>
+                                  {%elif selected_assessment_type_id == 'Mid Term' or selected_assessment_type_id == 'Final Term'%}
+                                  <th class="text-left">Total Assessment</th>
+                                  {%endif%}
+                                  <th class="text-left">Total Marks</th>
+                                  <th class="text-left">Marks Obtained</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              {% for student in students %}
+                                  <tr>
+                                      <td>
+                                          <div class="products">
+                                              <img src="{{ student.student_img.url}}" class="avatar avatar-md" alt="">
+                                              <div>
+                                                  <h6>{{ student.student_name }}</h6>
+                                                  <span>{{ student.student_enroll_no }}</span>
+                                              </div>
+                                          </div>
+                                      </td>
+                                      <td>
+                                          <select name="assessment_name" id="input-assessment-name" class="form-control custom-select" style="width:150px;" required >
+                                              <option value="" selected >-- Select --</option>
+                                                  {%for name in assessment_name%}
+                                                  <option value="{{name.assessment_name}}" >{{name.assessment_name}}</option>
+                                                  {%endfor%}
+                                                 
+                                          </select>
+                                      </td>
+                                      <td>
+                                      
+                                       
+                                          <input type="text" name="mapped_clos_plos" id="input-mapped-clos-plos" class="form-control" style="width:150px;" value="" required readonly >
+                                       
+                                        
+                                      </td>
+                                      <td>
+                                        <div class="form-group">
+                                        
+                                        
+                                          <input type="text" class="form-control" style="width:150px;" name="total_assessment" id="inputTotalAssessment" {% if selected_assessment_type_id == 'Mid Term' or selected_assessment_type_id == 'Final Term' %} value ="1" {% else %} value="{{ total_assessment }}" {% endif %} required readonly>
+                                       
+                                          </div>
+                                    </td>
+                                      <td>
+                                          <div class="form-group">
+
+                                              {%if selected_assessment_type_id == 'Mid Term'%}
+                                              <input type="number" step="0.1" class="form-control" style="width:150px;" name="total_marks" id="inputTotalMarks"  placeholder="Total Marks" value="20" required readonly>
+                                              {%elif selected_assessment_type_id == 'Final Term'%}
+                                              <input type="number" step="0.1" class="form-control" style="width:150px;" name="total_marks" id="inputTotalMarks"  placeholder="Total Marks" value="40" required readonly>
+                                              {%else%}
+                                              <input type="number" step="0.1" class="form-control" style="width:150px;" name="total_marks" id="inputTotalMarks"  placeholder="Total Marks" required >
+                                              {%endif%}
+                                            </div>
+                                      </td>
+                                      <td>
+                                          <div class="form-group">
+                                              <input type="number" step="0.1" class="form-control" style="width:150px;" name="marks_obtained" id="inputObtainedMarks" placeholder="Marks Obtained"   required>
+                                          </div>
+                                      </td>
+                                  </tr>
+                              {% endfor %}
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+              <div class="form-group text-center">
+                  <button type="submit" class="btn btn-success">Upload Result</button>
+              </div>
+          </form>
+           
+               
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  
+  </div>
+
+  {% else %}
+  <td class="text-muted"><span class="text-center">Student list will show here</span></td>
+
+  {% endif %}
+             
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  // listen for changes in the assessment name select element
+  document.querySelectorAll('select[name="assessment_name"]').forEach(function(select) {
+    select.addEventListener('change', function() {
+      // get the selected value and update the other rows with the same assessment name
+      var assessmentName = this.value;
+      document.querySelectorAll('select[name="assessment_name"]').forEach(function(rowSelect) {
+        if (rowSelect !== select) {
+          rowSelect.value = assessmentName;
+        }
+      });
+    });
+  });
+  
+  // listen for changes in the mapped clos plos select element
+  document.querySelectorAll('input[name="mapped_clos_plos"]').forEach(function(input) {
+    input.addEventListener('change', function() {
+      // get the selected value and update the other rows with the same mapped clos plos
+      var mappedClosPlos = this.value;
+      document.querySelectorAll('input[name="mapped_clos_plos"]').forEach(function(rowInput) {
+        if (rowInput !== input) {
+          rowInput.value = mappedClosPlos;
+        }
+      });
+    });
+  });
+  
+  // listen for changes in the total marks input element
+  document.querySelectorAll('input[name="total_marks"]').forEach(function(input) {
+    input.addEventListener('change', function() {
+      // get the entered value and update the other rows with the same total marks
+      var totalMarks = this.value;
+      document.querySelectorAll('input[name="total_marks"]').forEach(function(rowInput) {
+        if (rowInput !== input) {
+          rowInput.value = totalMarks;
+        }
+      });
+    });
+  });
+
+var assessmentTypeSelect = document.getElementById("input-assessment-type");
+var assessmentNameContainer = document.getElementById("assessment-name-container");
+
+assessmentTypeSelect.addEventListener("change", function() {
+    if (assessmentTypeSelect.value) {
+      assessmentNameContainer.style.display = "block";
+    } else {
+      assessmentNameContainer.style.display = "none";
+    }
+  });
+
+  $(document).ready(function() {
+    $('#input-assessment-name').on('change', function() {
+      var onChangeAssessmentName = $(this).val();
+      var onChangeCourseName = $('#input-course').val();
+      var onChangeAssessmentType = $('#input-assessment-type').val();
+    
+      $.ajax({
+        url: '/fac_dashboard/upload_result',
+        method: 'GET',
+        data: {
+          'onChangeAssessmentName_value': onChangeAssessmentName,
+          'onChangeCourseName_value': onChangeCourseName,
+          'onChangeAssessmentType_value': onChangeAssessmentType
+        },
+         success: function(response) {
+        // Loop through each row and update the mapped_clos_plos input field
+        $('#attendance-tbl tr').each(function() {
+          $(this).find('#input-mapped-clos-plos').val(response.mapped_clos_plos[0].mapped_clos_plos);
+        });
+      },
+        error: function(xhr, status, error) {
+          // Handle any errors here
+        }
+      });
+    });
+  });
+
+
+  </script>
+{% endblock %}

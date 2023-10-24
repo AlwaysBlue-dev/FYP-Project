@@ -1,0 +1,66 @@
+{% extends 'faculty/fac_menu.html'%}
+
+{% load static %}
+
+{% block title%} Attendance {% endblock %}
+
+{% block style %}
+<style>
+.card:hover {
+  box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.3);
+  transform: translateY(-5px);
+  transition: all 0.3s ease-in-out;
+}
+
+.card-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.card-text {
+  font-size: 18px;
+}
+</style>
+{% endblock %}
+
+{% block body%}
+<div class="container-fluid">
+  <div class="row justify-content-center mt-3 ">
+    {% if assign_course %}
+      {% if assign_course|length == 1 %}
+      <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+      {% else %}
+        <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+      {% endif %}
+          <div class="card">
+            {% comment %} <img src="{% static 'attendance.jpg' %}" class="card-img-top" style="width: auto; height: 150px;" alt="Classroom Picture"> {% endcomment %}
+            <div class="card-body">
+              <h5 class="card-title">{{ assign_course.0.assign_course.course_name }}</h5>
+              <p class="card-text">{{ assign_course.0.dep.dep_name }} Department </p>
+              <p class="card-text">{{ assign_course.0.depart_prog.prog_name }} Batch {{ assign_course.0.batch }} ({{ assign_course.0.time_shift }})</p>
+              <a href="/fac_dashboard/attendance/student_list/{{ assign_course.0.assign_course_id }}" class="btn btn-success size">Mark Attendance</a>
+            </div>
+          </div>
+        </div>
+      {% for course in assign_course|slice:"1:" %}
+        <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+          <div class="card">
+            {% comment %} <img src="{% static 'attendance.jpg' %}" class="card-img-top" style="width: auto; height: 150px;" alt="Classroom Picture"> {% endcomment %}
+            <div class="card-body">
+              <h5 class="card-title">{{ course.assign_course.course_name }}</h5>
+              <p class="card-text">{{ course.dep.dep_name }} Department </p>
+              <p class="card-text">{{ course.depart_prog.prog_name }} Batch {{ course.batch }} ({{ course.time_shift }})</p>
+              <a href="/fac_dashboard/attendance/student_list/{{ course.id }}" class="btn btn-success size">Mark Attendance</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="col-md-12">     
+        <h3 class="text-center text-muted mt-2">No course for attendance ❌</h3>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

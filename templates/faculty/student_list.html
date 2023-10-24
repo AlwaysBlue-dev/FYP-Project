@@ -1,0 +1,317 @@
+{% extends 'faculty/fac_menu.html' %}
+{% load static %}
+
+{% block title %}Student List{% endblock %}
+
+{% block style%}
+<style>
+.attendance-select {
+  --primary-color: #ffffff;
+  --background-color: #27ae60;
+  --background-color-selected: #e74c3c;
+  --font-size: 16px;
+  --border-radius: 8px;
+  --border-width: 2px;
+  --border-color: transparent;
+  --padding: 6px 16px;
+  --transition: all 0.3s ease-in-out;
+
+  appearance: none;
+  background-color: var(--background-color);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--primary-color);
+  cursor: pointer;
+  font-size: var(--font-size);
+  padding: var(--padding);
+  width: 80px;
+  height: 32px;
+  text-align: center;
+}
+
+.attendance-select:focus {
+  border-color: #a6a6a6;
+  outline: none;
+}
+
+.attendance-select option[value="P"] {
+  background-color: var(--background-color);
+}
+
+.attendance-select option[value="A"] {
+  background-color: var(--background-color-selected);
+}
+
+.attendance-select option:checked {
+  color: #ffffff;
+}
+
+option{
+  background-color:#ffff !important;
+  color:black !important;
+}
+
+/* Customize scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1DB954;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #111;
+  border-radius: 20px;
+  border: 3px solid #1DB954;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #333;
+}
+.table-responsive {
+  max-height: 500px;
+  overflow-y: auto;
+  scrol
+}
+</style>
+{%endblock%}
+
+{% block link %} <link rel="stylesheet" href="{% static 'css/view_attendance.css'%}"> {% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+  <div class="row justify-content-center">
+
+    <div class="col-md-5">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="text-center">Get Students</h3>
+        </div>
+        <div class="card-body">
+          <form method="get" action="/fac_dashboard/attendance/student_list/{{course.course_id}}">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="inputDepartment">Department</label>
+                    <select class="form-control" id="inputDepartment" name="department" required>
+                        <option value="">-- Select department --</option>
+                        {% for department in departments %}
+                        <option value="{{ department.dep_name }}">{{ department.dep_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            
+                <div class="form-group col-md-6">
+                  <label for="inputBatch">Programme</label>
+                  <select class="form-control" id="inputBatch" name="programme" required> 
+                      <option value="">-- Select programme --</option>
+                      {% for programme in programmes %}
+                      <option value="{{ programme.prog_name }}">{{ programme.prog_name }}</option>
+                      {% endfor %}
+                  </select>
+              </div>
+              
+              <div class="form-group col-md-6">
+                <label for="inputBatch">Batch</label>
+                <select class="form-control" id="inputBatch" name="batch" required> 
+                    <option value="">-- Select batch --</option>
+                    {% for batch in batches %}
+                    <option value="{{ batch.batch }}">{{ batch.batch }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+          
+              <div class="form-group col-md-6">
+                <label for="inputBatch">Shift</label>
+                <select class="form-control" id="inputBatch" name="shift" required> 
+                    <option value="">-- Select shift --</option>
+                   
+                   {% if fac_job_details.0.time_shift == 'Morning & Evening' %}
+                    <option value="morning">Morning</option>
+                    <option value="evening" >Evening</option>
+                  {% elif fac_job_details.0.time_shift == 'Morning' %}
+                   <option value="morning" Selected>Morning</option>
+                    {%else%}
+                    <option value="evening" Selected>Evening</option>
+                    {%endif%}
+                    
+                 
+                   
+                </select>
+            </div>
+            </div>
+
+            
+        
+            <button type="submit" class="btn btn-success">Filter</button>
+        </form>
+        {% if messages %}
+        <div class="alert alert-danger mt-3">
+            <ul>
+                {% for message in messages %}
+                    <h6 class="text-center text-danger">{{ message }}</h6>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+        {% comment %} {% if students %}
+            <h2>Student List:</h2>
+            <p>Department: {{ selected_department|default:"All" }}, Batch: {{ selected_batch|default:"All" }}</p>
+            <ul>
+                {% for student in students %}
+                <li>{{ student.name }} ({{ student.department }}, {{ student.batch }})</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No students found.</p>
+        {% endif %} {% endcomment %}
+        </div>
+      </div>
+    </div>
+    <div class="col-md-7">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="text-center">Student List </h3>
+          {%if latest_week == None %}
+          <h6 class="text-muted text-primary"> Total weeks submitted: 0</h6>
+          {%else%}
+          <h6 class="text-muted text-primary"> Total weeks submitted: {{latest_week}}</h6>
+          {%endif%}
+        </div> 
+        <div class="card-body">
+        
+            <div class="table-responsive active-projects style-1 attendance-tbl">
+
+              <div class="tbl-caption text-center">
+                  {% comment %} <h4 class="heading mb-0">Attendance</h4> {% endcomment %}
+              </div>
+
+              <table id="attendance-tbl " class="table">
+              <thead>
+                <tr>
+                  <th class="text-center">Student Info</th>
+                  <th class="text-center">Week</th>
+                  <th class="text-center" >Date</th>
+                  <th class="text-center">Status</th>
+                
+                </tr>
+              </thead>
+              <tbody>
+              
+               
+                {% for student in students %}
+                <tr>
+                  <td>
+                    <div class="products">
+                        <img src="{{ student.student_img.url}}" class="avatar avatar-md" alt="">
+                        <div>
+                         
+                            <h6>{{ student.student_name}}</h6>
+                            <span>{{ student.student_enroll_no}}</span>
+                        </div>
+                    </div>
+                </td>
+
+                <form method="post" action="/fac_dashboard/attendance/submit_attendance">
+                  {% csrf_token %} 
+
+                <td>  <div class="form-group">
+                  {% comment %} <label for="inputWeek">Week</label> {% endcomment %}
+                  <select class="form-control" name="inputWeek" id="inputWeek" onchange="updateWeek(this.value)" required >
+                    <option value="">-- Week --</option>
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                    <option>6</option>
+                    <option>7</option>
+                    <option>8</option>
+                    <option>9</option>
+                    <option>10</option>
+                    <option>11</option>
+                    <option>12</option>
+                    <option>13</option>
+                    <option>14</option>
+                    <option>15</option>
+                    <option>16</option>
+                  </select>
+                </div></td>
+
+                <td>
+                  <div class="form-group">
+                    <input type="date" class="form-control" name="inputDate" id="inputDate"  onchange="updateDate(this.value)" required>
+                  </div>
+                </td>
+
+                <td>
+                  <select name="attendance_status" class="attendance-select" onchange="this.style.backgroundColor = this.value === 'P' ? '#27ae60' : '#e74c3c'">
+                    <option value="P" selected>P</option>
+                    <option value="A">A</option>
+                  </select>
+                     
+                </td>
+             
+                     
+                  {% comment %} <td>{{ student.student_enroll_no }}</td>
+                  <td>{{ student.student_depart }}</td>
+                  <td>{{ student.student_batch }}</td> {% endcomment %}
+              
+            
+                </tr>
+                
+                <input type="hidden" name="student_name" value="{{ student.student_name }}">
+                <input type="hidden" name="student_enroll" value="{{ student.student_enroll_no }}">
+                <input type="hidden" name="student_depart" value="{{ student.student_depart }}">
+                <input type="hidden" name="student_depart_prog" value="{{ student.student_depart_prog }}">
+                <input type="hidden" name="student_batch" value="{{ student.student_batch }}">
+                <input type="hidden" name="student_img" value="{{ student.student_img }}">
+                <input type="hidden" name="course_id" value="{{ course.course_id }}">
+                <input type="hidden" name="fac_id" value="{{ fac_data.0.fac_id }}">
+                {% endfor %}
+               
+                
+           
+              </tbody>
+            </div>
+            </table>
+          </div>
+          {% if students %}
+            <button type="submit" class="btn btn-success">Submit Attendance</button>
+            {% else %}
+            <p class="text-muted text-center">Student list will show here</p>
+            {% endif %}
+          </form>
+            <a href="/fac_dashboard/attendance/view_attendance/{{course.course_id}}/{{fac_data.0.fac_id}}" class="btn btn-secondary">View Attendance Records<a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  function updateWeek(value) {
+    // Get all elements with the same name as the selected week
+    var elements = document.getElementsByName('inputWeek');
+    
+    // Loop through all the elements and update their selected value
+    for (var i = 0; i < elements.length; i++) {
+      elements[i].value = value;
+    }
+  }
+
+  function updateDate(value) {
+    // Get all elements with the same name as the selected date
+    var elements = document.getElementsByName('inputDate');
+    
+    // Loop through all the elements and update their value
+    for (var i = 0; i < elements.length; i++) {
+      elements[i].value = value;
+    }
+  }
+
+  
+  </script>
+{% endblock %}

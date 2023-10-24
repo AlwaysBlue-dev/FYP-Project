@@ -1,0 +1,209 @@
+{% extends 'faculty/fac_menu.html'%}
+{% load static %}
+
+{% block title %} {{classrooms.0.class_name}} Dashboard {% endblock %}
+
+{% block style %}
+<style>
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-subtitle {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-text {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        
+        }
+
+        .list-group-item {
+            font-size: 1.2rem;
+            padding: 0.75rem 1.25rem;
+            border: none;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .card {
+            border-radius: 0;
+            border: none;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .card:hover {
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(-5px);
+            transition: all 0.3s ease-in-out;
+          }
+        </style>
+{% endblock %}
+
+{% block body %}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title text-muted text-center">{{ classrooms.0.class_name }}</h6>
+                    {% comment %} <h6 class="card-subtitle mb-2 text-muted">{{ fac_data.0.fac_name }}</h6> {% endcomment %}
+                    {% comment %} <h6 class="card-subtitle mb-2 text-muted">Classroom Code: {{ classrooms.0.class_code}}</h6> {% endcomment %}
+                    {% comment %} <p class="card-text">{{ classrooms.0.class_desc }}</p> {% endcomment %}
+                </div>
+            
+               
+                <div id="bar-chart"></div>
+           
+
+            </div>
+        </div>
+        <div class="col-md-8 col-lg-6">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Lectures</h5>
+                            <p class="card-text">Upload new lecture or slides for this classroom.</p>
+                            <a href="/fac_dashboard/classroom_dashboard/{{classrooms.0.class_id}}/lectures_upload" class="btn btn-success">Upload</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Quizzes</h5>
+                            <p class="card-text">Upload quiz view submission and assign marks.</p>
+                            <a href="/fac_dashboard/classroom_dashboard/{{classrooms.0.class_id}}/quiz_upload" class="btn btn-success">Upload</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Assignments</h5>
+                            <p class="card-text">Upload assignments view submission and assign marks.</p>
+                            <a href="/fac_dashboard/classroom_dashboard/{{classrooms.0.class_id}}/assignment_upload" class="btn btn-success">Upload</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title" style="white-space:nowrap;">Announcements</h5>
+                            <p class="card-text">Upload latest announcements for this classroom.</p>
+                            <a href="/fac_dashboard/classroom_dashboard/{{classrooms.0.class_id}}/announcement_upload" class="btn btn-success">Upload</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 col-lg-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Joined Students</h5>
+                            <p class="card-text">View the students enrolled in this classroom.</p>
+                            <a href="/fac_dashboard/joined_students/{{classrooms.0.class_id}}" class="btn btn-success">View</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<script>
+    // Function to create a bar chart
+    function createBarChart(data, chartId) {
+      var margin = { top: 10, right: 30, bottom: 50, left: 60 },
+        width = 420 - margin.left - margin.right,
+        height = 360 - margin.top - margin.bottom;
+  
+      var svg = d3
+        .select(chartId)
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  
+      // Add X axis
+      var x = d3
+        .scaleBand()
+        .range([0, width])
+        .domain(data.map(function (d) { return d.label; }))
+        .padding(0.2);
+        
+  
+      svg
+        .append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .style("font-size", "12px")
+        .style("font-weight", "bold")
+        .attr("transform", "rotate(-20)")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em");
+  
+      // Add Y axis
+      var y = d3
+        .scaleLinear()
+        .domain([
+          0,
+          d3.max(data, function (d) { return d.value; })
+        ])
+        .range([height, 0]);
+  
+      var yAxis = svg.append("g").call(d3.axisLeft(y).ticks(5));
+  
+      // Remove duplicate y-axis ticks
+      var yTicks = yAxis.selectAll("text").nodes();
+      yTicks.forEach(function(tick, index) {
+        if (index > 0 && tick.textContent == yTicks[index - 1].textContent) {
+          tick.remove();
+        }
+      });
+  
+     // Add bars
+    svg
+    .selectAll("mybar")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("x", function (d) { return x(d.label); })
+    .attr("y", function (d) { return y(d.value); })
+    .attr("width", x.bandwidth())
+    .attr("height", function (d) { return height - y(d.value); })
+    .attr("fill", function (d) { return d.color; });
+
+}
+
+  
+    // Create the data for the chart
+    var data = [
+      { label: "lectures", value: {{ lectures|length }}, color: "#3e95cd" },
+      { label: "quizzes", value: {{ quiz|length }}, color: "#8e5ea2" },
+      { label: "assignments", value: {{ assignment|length }}, color: "#3cba9f" },
+      { label: "announcements", value: {{ announcement|length }}, color: "#e8c3b9" },
+      { label: "students", value: {{ num_student_joined_classrooms }}, color: "#c45850" }
+    ];
+    
+    // Call the function to create the chart
+    createBarChart(data, "#bar-chart");
+</script>
+
+    
+
+  {% endblock %}
+      

@@ -1,0 +1,26 @@
+{% extends 'student/stu_menu.html'%}
+{% load static %}
+
+{% block title %} Student Dashboard {% endblock %}
+
+{% block style %}
+<style>
+    /* add any custom styles here */
+</style>
+{% endblock %}
+
+{% block body %}
+
+<div>
+    {% comment %} <h1 class="mt-4">Student Dashboard</h1> {% endcomment %}
+<div>
+    {%if stu_data%}
+    <div class="container-fluid mt-3">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-12 col-lg-12">
+                <iframe title="Report Section" width="1235" height="800" src="https://app.powerbi.com/view?r=eyJrIjoiNDEzNTM5MzMtNzM3OS00NWQ5LTg4Y2MtMTc4ZmFjOWVlNzUyIiwidCI6ImUxZjFmNGNhLWQxMGEtNGEwNS1iNzY1LWIzMTAzOGI0NGVlNCIsImMiOjl9" frameborder="0" allowFullScreen="true"></iframe>
+            </div>
+        </div>
+    </div>
+   {%endif%}
+{% endblock %}

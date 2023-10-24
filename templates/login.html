@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Login - University Portal</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+  <div class="container-fluid h-100 mt-5">
+    <div class="row h-100 align-items-center justify-content-center">
+      <div class="col-lg-4 col-md-6 col-sm-8">
+        <div class="card">
+          <div class="card-body">
+            {% comment %} <h3 class="text-center"><b>Ziauddin</b>University</h3> {% endcomment %}
+            <img src="{% static 'logo/zu_logo2.png' %}" class="img-fluid">
+            <form method="POST" action="/login/">
+              {% csrf_token %}
+              <input type="hidden" name="user_id" value="{{ user.login_id }}">
+                {% if error_message %}
+                <div class="alert alert-danger" role="alert">
+                    <h5 class="text-center">{{ error_message }}</h5>
+                  </div>
+                {% endif %}
+              <div class="form-group mt-3">
+                <label for="username">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required autofocus>
+              </div>
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block mt-4">Sign In</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+</body>
+</html>

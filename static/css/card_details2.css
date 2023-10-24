@@ -1,0 +1,84 @@
+/* Set box-sizing for all elements */
+* {
+    box-sizing: border-box;
+   
+}
+
+/* Reset body margin and padding */
+body {
+    margin: 0;
+    padding: 0;
+}
+
+
+/* Create a container for page content */
+.container {
+    margin-top: 20px;
+    display: flex;
+}
+
+/* Create a sidebar for navigation menu */
+.sidebar {
+    /* background-color: #1DB954 !important; */
+    height: auto;
+    margin-top: 67px;
+    position: fixed;
+    top: 0;
+    left: -200px;
+    width: 300px;
+    z-index: 999;
+    transition: all 0.3s ease;
+}
+
+/* Center logo within sidebar */
+.logo {
+    text-align: center;
+}
+
+.profile_pic {
+    width: 120px;
+}
+.font_depart{
+    font-size: 14px;
+}
+.list-group-item{
+    display: table-header-group;
+}
+
+.dropdown-item:hover {
+    background-color: lightgreen;
+}
+
+/* Apply responsive design rules for screens with width less than 768px */
+@media screen and (max-width: 767px) {
+
+    /* Set background color, width and height for sidebar */
+    .sidebar {
+        left: 0;
+        width: 60%;
+    }
+
+    .list-group-item {
+        font-size: 18px;
+    }
+  
+    .list-group-item li {
+        font-size: 15px;
+    }
+
+    .profile_pic {
+        width: 120px;
+    }
+}
+
+
+/* Media query for small screens */
+@media screen and (min-width: 768px) {
+
+    /* Styles for the sidebar */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+}

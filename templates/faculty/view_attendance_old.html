@@ -1,0 +1,144 @@
+{% extends 'faculty/navbar_menu.html' %}
+
+{% block title %}View Attendance{% endblock %}
+
+{% block style%}
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+th, td {
+    text-align: center;
+    padding: 8px;
+}
+.card-header, th{
+    background-color: #4CAF50;
+    color: white;
+    white-space: nowrap;
+}
+td{
+  white-space: nowrap;
+}
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+/* Media queries for responsiveness */
+@media only screen and (max-width: 768px) {
+  table {
+        font-size: 14px;
+    }
+}
+@media only screen and (max-width: 576px) {
+   
+    table {
+        font-size: 10px;
+    }
+    .card{
+        width:90%;
+    }
+}
+</style>
+
+{%endblock%}
+
+{% block body %}
+
+
+<div class="container-fluid mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="text-center">Filter Options</h3>
+        </div>
+        <div class="card-body">
+        
+          <form method="get" action="/fac_dashboard/attendance/view_attendance/{{course_data.course_id}}/{{fac_data.fac_id}}">
+            <div class="form-row">
+                <div class="form-group col-md-8">
+                    <label for="inputWeek">Attendance Week</label>
+                    <select class="form-control" id="inputWeek" name="week" required>
+                        <option value="">--Select week--</option>
+                        <option>All</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                        <option>9</option>
+                        <option>10</option>
+                        <option>11</option>
+                        <option>12</option>
+                        <option>13</option>
+                        <option>14</option>
+                        <option>15</option>
+                        <option>16</option>
+        
+                    </select>
+                </div>
+              
+               
+            </div>
+        
+            <button type="submit" class="btn btn-success">Filter</button>
+        </form>
+       
+        
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-9">
+      <div class="card">
+        <div class="card-body">
+   
+            <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Enrollment</th>
+                  {% comment %} <th>Department</th> {% endcomment %}
+                  {% comment %} <th>Batch</th> {% endcomment %}
+                  <th>Course</th>
+                  <th>Date</th>
+                  <th>Attendance Week</th>
+                  <th>Attendance_Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {%if attendance_data%}
+                {% for attendance in attendance_data %}
+                <tr>
+                  <td>{{ attendance.student_name }}</td>
+                  <td>{{ attendance.student_enroll_no }}</td>
+                  {% comment %} <td>{{ attendance.student_depart }}</td> {% endcomment %}
+                  {% comment %} <td>{{ attendance.student_batch }}</td> {% endcomment %}
+                  <td>{{ attendance.course.course_name }}</td>
+                  <td>{{ attendance.attendance_date }}</td>
+                  <td>{{ attendance.attendance_week }}</td>
+                  <td>{{ attendance.attendance_status }}</td>
+                
+            
+                {% endfor %}
+                {% else %}
+                <td>This week attendance not submitted yet</td>
+                {%endif%}
+              </tr>
+              </tbody>
+            </div>
+            </table>
+          
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{%endblock%}

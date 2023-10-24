@@ -1,0 +1,219 @@
+{% extends 'faculty/fac_menu.html' %}
+{% load static %}
+
+{% block title %} Classroom Dashboard {% endblock %}
+
+{% block style %}
+<style>
+   .classroom-card {
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+    font-size: 20px;
+    
+}
+
+.card-text {
+    font-size: 18px;
+}
+
+.enter-btn {
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.delete-btn {
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.delete-btn:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.enter-btn:hover {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.card:hover {
+    box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.3);
+    transform: translateY(-5px);
+    transition: all 0.3s ease-in-out;
+}
+
+    
+   
+    @media screen and (min-width: 768px) {
+        .col-lg-4 {
+            max-width: 33.3333%;
+        }
+       
+    }
+    
+    @media screen and (max-width: 767px) {
+        .col-lg-4 {
+            max-width: 100%;
+        }
+    }
+    @media screen and (max-width: 987px) {
+      .mob{
+        font-size:12px;
+      }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+{% comment %} <h1 class="offset-md-4">Classroom Dashboard</h1> {% endcomment %}
+
+<!-- display a list of all classrooms -->
+{% if classrooms %}
+<div class="container-fluid">
+<div class="row justify-content-center mt-3">
+  {% for classroom in classrooms %}
+  {% if classrooms|length == 1 %}
+  <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+    {% else %}
+      <div class="col-lg-6 col-md-12 col-sm-12 mb-4 ">
+         {% endif %}
+          <div class="card">
+              <img src="{% static 'classroom.jpg' %}" class="card-img-top" style="width: auto; height: 150px;" alt="Classroom Picture">
+              <div class="card-body">
+                  <h5 class="card-title">{{classroom.class_name}}</h5>
+                  <p class="card-text "> {{fac_data.0.fac_name}}</p>
+                    <p class="card-text">{{classroom.class_desc}}</p>
+                    <p class="card-text text-danger font-weight-bold"><strong>Code:</strong> {{classroom.class_code}}</p>
+                  <a href="/fac_dashboard/classroom_dashboard/{{classroom.class_id}}" class="btn btn-success mob">Enter Classroom</a>
+                  <button class="btn btn-danger mob" data-toggle="modal" data-target="#deleteModal{{classroom.class_id}}">Delete Classroom</button>
+              </div>
+          </div>
+      </div>
+    {% endfor %}
+    </div>
+  </div>
+{% else %}
+<div>
+<h3 class="text-muted text-center mt-3">No classrooms created yet 📚 </h3>
+</div>
+
+ 
+ <div class="row">
+  <button type="button" class="btn btn-success m-auto mt-2" data-toggle="modal" data-target="#exampleModal">
+    Create Now
+  </button> 
+
+  <!-- Confirmation Modal -->
+  <div class="modal fade" id="deleteModal{{classroom.class_id}}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{classroom.class_id}}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel{{classroom.class_id}}">Delete Classroom</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete {{classroom.class_name}}?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <a href="/fac_dashboard/delete_classroom/{{classroom.class_id}}" class="btn btn-danger">Delete</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+ <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Create Classroom</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <form action="/fac_dashboard/create_classroom" method="POST">
+                {% csrf_token %}
+                  {{ form.as_p }}
+                  <div class="form-group">
+                    <label for="exampleInputEmail1">Classroom Name</label>
+                    <input type="name" name="classroom_name" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Classroom Name">
+                  
+                  </div>
+                  <div class="form-group">
+                    <label for="exampleInputPassword1">About The Classroom</label>
+                    <input type="text" name="classroom_desc" class="form-control" id="exampleInputPassword1" placeholder="Classroom Description">
+                  </div>
+                 
+          
+                  <button type="submit" class="btn btn-success">Create Classroom</button>
+                </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+
+          </div>
+        </div>
+      </div>
+    </div> 
+{% endif %} 
+
+ <!-- Modal -->
+
+{% comment %} 
+ <div class="row">
+  <button type="button" class="btn btn-success offset-md-6 mt-2" data-toggle="modal" data-target="#exampleModal">
+    Create a New Classroom
+  </button> {% endcomment %}
+
+
+    {% comment %} <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Create Classroom</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <form action="/fac_dashboard/create_classroom" method="POST">
+                {% csrf_token %}
+                  {{ form.as_p }}
+                  <div class="form-group">
+                    <label for="exampleInputEmail1">Classroom Name</label>
+                    <input type="name" name="classroom_name" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Classroom Name">
+                  
+                  </div>
+                  <div class="form-group">
+                    <label for="exampleInputPassword1">About The Classroom</label>
+                    <input type="text" name="classroom_desc" class="form-control" id="exampleInputPassword1" placeholder="Classroom Description">
+                  </div>
+                  <div class="form-group">
+                      <label for="exampleInputPassword1">Class Code</label>
+                      <input type="text" name="classroom_code" class="form-control" id="exampleInputPassword1" placeholder="Class Code">
+                    </div>
+          
+                  <button type="submit" class="btn btn-success">Create Classroom</button>
+                </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+
+          </div>
+        </div>
+      </div>
+    </div> {% endcomment %}
+
+{% endblock %}        

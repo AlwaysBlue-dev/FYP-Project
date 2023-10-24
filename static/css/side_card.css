@@ -1,0 +1,431 @@
+ /* Import fonts */
+ @import url('https://fonts.googleapis.com/css2?family=Limelight&display=swap');
+ @import url('https://fonts.googleapis.com/css2?family=Limelight&family=Sigmar+One&display=swap');
+ 
+ /* Set box-sizing for all elements */
+ * {
+     box-sizing: border-box;
+     background-color: red;
+ }
+ 
+ /* Reset body margin and padding */
+ body {
+     margin: 0;
+     padding: 0;
+     background-color: red;
+ }
+ 
+ /* Set background color for header */
+ .head_bg {
+     background-color: #811331;
+ }
+ 
+ /* Set font color, family and size for header title */
+ .head_title {
+     color: #fff;
+     font-family: 'Limelight', cursive;
+     font-size: 40px;
+     transition: all 0.2s ease-in-out;
+     margin-left: 40%;
+ }
+ 
+ .head_title2 {
+     color: #fff;
+     font-size: 20px;
+     transition: all 0.2s ease-in-out;
+ 
+ }
+ 
+ .search {
+     width: 90px;
+ }
+ 
+ /* Create a container for page content */
+ .container {
+     margin-top: 20px;
+     display: flex;
+ }
+ 
+ /* Create a sidebar for navigation menu */
+ .sidebar {
+     background-color: #811331;
+     height: 100%;
+     position: fixed;
+     top: 0;
+     left: -200px;
+     width: 200px;
+     z-index: 999;
+     transition: all 0.3s ease;
+ }
+ 
+ /* Show sidebar when it's open */
+ .sidebar.open {
+     left: 0;
+ }
+ 
+ /* Center logo within sidebar */
+ .logo {
+     text-align: center;
+ }
+ 
+ /* Change menu2 img width and font size */
+ .menu2_img {
+     width: 35px;
+ }
+ 
+ .menu2_font {
+     font-size: 12px;
+ }
+ 
+ /* Change menu2 img width*/
+ .menu3_img {
+     width: 36px;
+ }
+ 
+ /* Set style for navigation menu */
+ .menu {
+     list-style: none;
+     margin: 0;
+     padding: 0;
+ }
+ 
+ /* Add a border to each menu item */
+ .menu li {
+     display: flex;
+     align-items: center;
+     border-bottom: 1px solid #ddd;
+     margin-top: 2px;
+     font-size: 15px;
+ }
+ 
+ /* Remove border from last menu item */
+ .menu li:last-child {
+     border-bottom: none;
+ }
+ 
+ /* Set style for navigation menu links */
+ .menu a {
+     display: flex;
+     align-items: center;
+     justify-content: flex-start;
+     padding: 5px 10px;
+     color: #fff;
+     display: block;
+     padding: 5px 10px;
+     text-decoration: none;
+ }
+ 
+ /* Set image height and margin for menu icons
+ .menu img {
+     height: 40px;
+     margin-right: 2px;
+ } */
+ 
+ .menu li a img {
+     height: 35px;
+     margin-right: 14px;
+ }
+ 
+ .menu li a span {
+     flex: 1;
+ }
+ 
+ /* Change background color and font color on hover for menu links */
+ .menu a:hover {
+     background-color: lightgray;
+     color: #811331;
+ }
+ 
+ /* Hide hamburger icon on default */
+ .hamburger {
+     display: none;
+ }
+ 
+ /* Apply responsive design rules for screens with width less than 768px */
+ @media screen and (max-width: 767px) {
+ 
+     /* Set background color, width and height for sidebar */
+     .sidebar {
+         background-color: #811331;
+         left: -100%;
+         width: 100%;
+         height: auto;
+     }
+ 
+     /* Show sidebar when it's open */
+     .sidebar.open {
+         left: 0;
+     }
+ 
+     /* Move logo to left */
+     .logo {
+         text-align: left;
+         width: 200px;
+     }
+ 
+     /* Hide navigation menu on default */
+     .menu {
+         display: none;
+     }
+ 
+     /* Show navigation menu when it's open */
+     .menu.open {
+         display: block;
+         position: absolute;
+         top: 60px;
+         left: 0;
+         width: 100%;
+         background-color: #811331;
+         z-index: 998;
+     }
+ 
+     /* Add border to each menu item when it's open */
+     .menu.open li {
+         border-bottom: 1px solid #ddd;
+     }
+ 
+     /* Remove border from last menu item when it's open */
+     .menu.open li:last-child {
+         border-bottom: none;
+     }
+ 
+     /* Styles for open menu links */
+     .menu.open a {
+         padding: 10px 20px;
+     }
+ 
+     /* Styles for open menu images */
+     .menu.open img {
+         height: 50px;
+         margin-right: 10px;
+     }
+ 
+     .head_title {
+         margin-left: 10px;
+     }
+ 
+ }
+ 
+ /* Styles for the hamburger menu */
+ .hamburger {
+     display: block;
+     position: fixed;
+     top: 20px;
+     right: 20px;
+     z-index: 999;
+ }
+ 
+ .hamburger span {
+     background-color: #fff;
+     display: block;
+     height: 2px;
+     margin: 5px 0;
+     transition: all 0.3s ease;
+     width: 25px;
+ }
+ 
+ .hamburger.open span:nth-child(2) {
+     opacity: 0;
+ }
+ 
+ .hamburger.open span:nth-child(1) {
+     transform: rotate(45deg) translateY(5px);
+ }
+ 
+ .hamburger.open span:nth-child(3) {
+     transform: rotate(-45deg) translateY(-5px);
+ }
+ 
+ /* Media query for small screens */
+ @media screen and (min-width: 768px) {
+ 
+     /* Styles for the sidebar */
+     .sidebar {
+         background-color: #811331;
+         position: fixed;
+         top: 0;
+         left: 0;
+     }
+ 
+     /* Styles for the menu */
+     .menu {
+         display: block;
+         margin-top: 80px;
+     }
+ 
+     /* Styles for the hamburger menu */
+     .hamburger {
+         display: none;
+     }
+ }
+ 
+ /* Styles for the card title */
+ .card-title {
+     font-size: 19px;
+ }
+ 
+ /* Styles for the table of standings */
+ .table_standing {
+     height: 380px;
+     overflow-y: scroll;
+ }
+ 
+ .table_standing::-webkit-scrollbar {
+     width: 8px;
+     height: 8px;
+ }
+ 
+ .table_standing::-webkit-scrollbar-thumb {
+     background-color: #811331;
+     border-radius: 8px;
+ }
+ 
+ .table_standing::-webkit-scrollbar-track {
+     background-color: #f2f2f2;
+     border-radius: 8px;
+ }
+ 
+ .table_standing {
+     scrollbar-color: #555 #f2f2f2;
+     scrollbar-width: thin;
+ }
+ 
+ /* Styles for the table head */
+ .table_head {
+     background-color: #811331;
+ }
+ 
+ /* Styles for the table header text */
+ th {
+     color: #fff;
+ }
+ 
+ /* Styles for the standing text */
+ .standing_text {
+     font-family: 'Sigmar One', cursive;
+     background-color: #811331;
+     color: #fff;
+     font-size: 40px;
+ }
+ 
+ /* Styles for the standing color */
+ .standing_color {
+     background-color: rgb(15, 49, 110);
+ }
+ 
+ /* Styles for the standing data */
+ .standing_data {
+     color: #fff;
+ }
+ 
+ .table-img {
+     width: 100%;
+ }
+ 
+ /* Styles for the Ji text */
+ .ji_text {
+     font-family: 'Sigmar One', cursive;
+     background-color: #811331;
+     color: #fff;
+ 
+ }
+ 
+ /* Styles for the Ji table */
+ .ji_table {
+     background-color: lightblue;
+ }
+ 
+ /* Styles for the Ji table head */
+ .ji_head {
+     background-color: #811331;
+ }
+ 
+ .ji {
+     max-height: 300px;
+     overflow-y: auto;
+     overflow-x: hidden;
+ }
+ 
+ .ji::-webkit-scrollbar {
+     width: 8px;
+     height: 8px;
+ }
+ 
+ .ji::-webkit-scrollbar-thumb {
+     background-color: #811331;
+     border-radius: 8px;
+ }
+ 
+ .ji::-webkit-scrollbar-track {
+     background-color: #f2f2f2;
+     border-radius: 8px;
+ }
+ 
+ /* Styles for the notification image */
+ .notification_img {
+     width: 50px;
+ }
+ 
+ /* Styles for the notification header */
+ .notification_header {
+     background-color: #811331 !important;
+ }
+ 
+ /* Styles for the notification text */
+ .notification_text {
+     color: #fff;
+     font-family: 'Sigmar One', cursive;
+ }
+ 
+ /* Styles for the notifications container */
+ .notifications-container {
+     max-height: 300px;
+     overflow-y: auto;
+ }
+ 
+ /* Styling for custom scrollbar in notifications container */
+ .notifications-container::-webkit-scrollbar {
+     width: 8px;
+     height: 8px;
+ }
+ 
+ .notifications-container::-webkit-scrollbar-thumb {
+     background-color: #811331;
+     border-radius: 8px;
+ }
+ 
+ .notifications-container::-webkit-scrollbar-track {
+     background-color: #f2f2f2;
+     border-radius: 8px;
+ }
+ 
+ /* Styling for custom scrollbar in company project container */
+ .com_proj {
+     max-height: 300px;
+     overflow-y: auto;
+ }
+ 
+ .com_proj::-webkit-scrollbar {
+     width: 8px;
+     height: 8px;
+ }
+ 
+ .com_proj::-webkit-scrollbar-thumb {
+     background-color: #811331;
+     border-radius: 8px;
+ }
+ 
+ .com_proj::-webkit-scrollbar-track {
+     background-color: #f2f2f2;
+     border-radius: 8px;
+ }
+ 
+ .com_proj_head {
+     background-color: #811331;
+     color: #fff;
+     font-family: 'Sigmar One', cursive;
+ }
+ 
+ .com_proj_date {
+     color: #fff;
+ }

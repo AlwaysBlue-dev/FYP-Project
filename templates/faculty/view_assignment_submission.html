@@ -1,0 +1,222 @@
+{% extends 'faculty/fac_menu.html' %}
+{% block title %} {{assignments.0.classroom.class_name}}{% endblock %}
+{% block body %}
+{% block stlye  %}
+<style>
+/* Add custom styling to the table */
+body{
+  overflow-x:hidden;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+th, td {
+    text-align: center;
+    padding: 8px;
+}
+th {
+    background-color: #4CAF50;
+    color: white;
+    white-space: nowrap;
+}
+td{
+  white-space:nowrap; 
+}
+/* Scrollbar styles */
+.table-responsive::-webkit-scrollbar {
+  width: 10px;
+  
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background-color: #000;
+  border-radius: 999px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background-color: #1DB954;
+  border-radius: 999px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background-color: #1DB954;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+.assign_marks{
+    color:green; 
+ }
+ .assign_marks:hover {
+     background-color: #1DB954;
+ }
+/* Media queries for responsiveness */
+@media only screen and (max-width: 768px) {
+  table {
+        font-size: 14px;
+    }
+}
+@media only screen and (max-width: 576px) {
+   
+    table {
+        font-size: 10px;
+    }
+    .card{
+        width:90%;
+    }
+}
+</style>
+{% endblock  %}
+<!-- Table -->
+<div class="table-wrapper">
+<div class="container">
+<div class="col-md-12">
+    <div class="row">
+<div class="table-responsive">
+<table class="table">
+    <thead>
+        <tr >
+            <th>Title</th>
+            <th>Student Name</th>
+            <th>Student Enrollment</th>
+            <th>Submitted</th>
+            <th>Due Date</th>
+            <th></th>
+            <th colspan="2">File</th>
+            <th>Status</th>
+            <th>Total Marks</th>
+            <th>Marks Obtained</th>
+            <th>Assign Marks</th>
+            <th></th>
+
+       
+        </tr>
+    </thead>
+    <tbody>
+        {% for submission in submissions %}
+        <tr>
+            <td>{{ submission.assign_name}}</td>
+            <td>{{ submission.student.student_name }}</td>
+            <td>{{ submission.student.student_enroll_no }}</td>
+            <td>{{ submission.assignment_submission_date }}</td>
+            <td style="color:red">{{submission.assignment.assign_deadline}}<td>
+
+            <td colspan="2"><a href="{{ submission.assign_file.url }}" class="btn btn-success size" download><i class="fas fa-download"></i></a>
+            <a href="{{submission.assign_file.url}}"  class="btn btn-success size" target="_blank"><i class="fa-solid fa-eye"></i></a></td>
+            
+            {% if submission.assignment.assign_deadline > submission.assignment_submission_date  %}
+            <td><span class="text-success">Timely</span></td>
+            {%else%}
+            <td><span class="text-danger">Late</span></td>
+        
+        {%endif%}
+        <td class="text-center">{{assignment.assign_marks}}</td>
+        {%if submission.assign_marks_obtained%}
+            <td class="text-center">{{submission.assign_marks_obtained}}</td>
+          {%else%}
+            <td class="text-center">-</td>
+            {%endif%}
+            {% comment %} <td><button type="button" class ="btn assign_marks"  data-toggle="modal" data-target="#assignMarksModal">Assign Marks</button></td> {% endcomment %}
+        
+            <td>
+              <div>
+                <form method="post" action="/fac_dashboard/view_assignment_submissions/{{ assignment.assign_id }}/assign_assignment_marks">
+                  {% csrf_token %}
+               
+                  <div class="form-group">
+                    {% comment %} <label for="assignMarksInput">Assign Marks</label> {% endcomment %}
+                    <input type="number" step="0.01" class="form-control" id="assignMarksInput" name="assignment_assign_marks_{{submission.sub_id}}" required>
+                  </div>
+                  <div class='form-group'>
+                  
+                    <input type="hidden" name="submission_ids[]" value="{{ submission.sub_id }}">
+                  
+                 
+                </div>
+                  <div class="form-group">
+                    {% comment %} <label for="totalMarksInput">Total Marks</label> {% endcomment %}
+                    <input type="number" class="form-control" id="totalMarksInput" name="assignment_total_marks" placeholder="{{assignment.assign_marks}}" value="{{assignment.assign_marks}}" hidden>
+                   </div>
+      
+                 
+                
+              </div>
+            </td>
+            {%empty%}
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>No Quiz Submitted</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        {% endfor %}
+        <tr>
+          {% if submissions %}
+          <td colspan="11" align="right">
+                  <button type="submit" class="btn btn-success" id="assignAllButton">Assign Marks</button>
+              </form>
+          </td>
+      </tr>
+      {%endif%}
+        </tbody>
+          </div>
+    </table>
+
+                    
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Modal -->
+{% comment %} <div class="modal fade" id="assignMarksModal" tabindex="-1" role="dialog" aria-labelledby="assignMarksModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="assignMarksModalLabel">Assign Marks</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form method="post" action="/fac_dashboard/view_assignment_submissions/{{assignment.assign_id}}/{{submissions.0.sub_id}}/assign_assignment_marks">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="assignMarksInput">Assign Marks</label>
+              <input type="number" step="0.01" class="form-control" id="assignMarksInput" name="assignment_assign_marks" required>
+            </div>
+
+            <div class="form-group">
+              <label for="totalMarksInput">Total Marks</label>
+              <input type="number" class="form-control" id="totalMarksInput" name="assignment_total_marks" placeholder="{{assignment.assign_marks}}" value="{{assignment.assign_marks}}" readonly>
+             </div>
+
+            <button type="submit" class="btn btn-success">Submit</button>
+          </form>
+          
+        </div>
+        
+      </div>
+      
+    </div>
+    
+  </div> {% endcomment %}
+  
+{% endblock %}

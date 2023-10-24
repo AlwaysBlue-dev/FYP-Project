@@ -1,0 +1,204 @@
+{% extends 'faculty/fac_menu.html' %}
+{% load static %}
+
+{% block title %}View Attendance{% endblock %}
+
+{% block link %} <link rel="stylesheet" href="{% static 'css/view_attendance.css'%}"> {% endblock %}
+
+{% block style%}
+<style>
+.table-responsive {
+    max-height: 400px;
+    width:1100px; 
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+  }
+  
+  /* Scrollbar styles */
+  .table-responsive::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  .table-responsive::-webkit-scrollbar-track {
+    background-color: #1DB954;
+    border-radius: 999px;
+  }
+  
+  .table-responsive::-webkit-scrollbar-thumb {
+    background-color: #fff;
+    border-radius: 999px;
+  }
+  
+  .table-responsive::-webkit-scrollbar-thumb:hover {
+    background-color: #ccc;
+  }
+  @media (max-width: 1199.98px) {
+    .table-responsive {
+      width: auto;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+  }
+</style>
+{%endblock%}
+
+{% block body %}
+
+<div class="col-xl-12">
+    
+    <div class="card">
+
+        <div class="card-body p-0">
+
+            <div class="tbl-filter">
+                <form>
+                    <div class="form-row justify-content-center mt-5" >
+                        <div class="form-group col-md-2">
+                            <label for="week">Select Week:</label>
+                            <select class="form-control" id="week" name="week">
+                                <option value="">All</option>
+                                <option value="1">Week 1</option>
+                                <option value="2">Week 2</option>
+                                <option value="3">Week 3</option>
+                                <option value="4">Week 4</option>
+                                <option value="5">Week 5</option>
+                                <option value="6">Week 6</option>
+                                <option value="7">Week 7</option>
+                                <option value="8">Week 8</option>
+                                <option value="9">Week 9</option>
+                                <option value="10">Week 10</option>
+                                <option value="11">Week 11</option>
+                                <option value="12">Week 12</option>
+                                <option value="13">Week 13</option>
+                                <option value="14">Week 14</option>
+                                <option value="15">Week 15</option>
+                                <option value="16">Week 16</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-2 mt-4">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+
+            <div class="table-responsive active-projects style-1 attendance-tbl">
+
+                <div class="tbl-caption text-center">
+                    {% comment %} <h4 class="heading mb-0">Attendance</h4> {% endcomment %}
+                </div>
+
+                <table id="attendance-tbl " class="table">
+                    <thead>
+                        <tr>
+                            <th>Student Info</th>
+                            <th style="text-align:center">Attendance Week</th>
+                            <th style="text-align:center">Attendance Date</th>    
+                            <th style="text-align:center">Attendance Status</th>
+                           
+                          
+                            {% comment %} {% for week in attendance_weeks %}
+                            <th>
+                                <span>{{ week }}</span>
+                                <p>MO</p>
+                            </th>
+                            {% endfor %}
+                            {% endcomment %}
+                            <th >
+                              Update
+                            </th> 
+                            <th class="text-center">
+                              
+                            </th> 
+
+                           
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {%if attendance_data%}
+                        {%for attendance in attendance_data%}
+                        <tr>
+                            <td>
+                                <div class="products">
+                                    <img src="{{attendance.student_img.url}}" class="avatar avatar-md" alt="">
+                                    <div>
+                                     
+                                        <h6>{{attendance.student_name}}</h6>
+                                        <span>{{attendance.student_enroll_no}}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="text-align:center">{{attendance.attendance_week}}</td>
+                            <td style="text-align:center">{{attendance.attendance_date}}</td>
+                            <td style="text-align:center"> {%if attendance.attendance_status == 'P'%}
+                                <span class="text-success"><i class="fa-solid fa-check"></i></span>
+                                {%else%}
+                                <span class="text-danger"><i class="fa-regular fa-xmark"></i></span>
+                                {%endif%}</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#editModal{{attendance.id}}">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                    
+                                    <div class="modal fade" id="editModal{{attendance.id}}" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+                                      <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                          <div class="modal-header">
+                                            <h5 class="modal-title " id="editModalLabel" >Edit Attendance</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                              <span aria-hidden="true">&times;</span>
+                                            </button>
+                                          </div>
+                                          <form method="post" action="/fac_dashboard/attendance/update_attendance/{{attendance.id}}">
+                                            {% csrf_token %}
+                                            <div class="modal-body">
+                                            <div class="form-group">
+                                                    <label for="student_name" class="font-weight-bold">Student Info</label> <span> (not editable) </span> 
+                                                    <input type="text" class="form-control" id="student_name" name="student_name" value="{{attendance.student_name}} {{attendance.student_enroll_no}}" readonly>
+                                                </div>
+                                              <div class="form-group">
+                                                <label for="attendance_week" class="font-weight-bold">Attendance Week </label> <span> (not editable) </span> 
+                                                <input type="text" class="form-control" id="attendance_week" name="attendance_week" value="{{attendance.attendance_week}}" readonly>
+                                              </div>
+                                              <div class="form-group">
+                                                <label for="attendance_date" class="font-weight-bold">Attendance Date </label> <span> (not editable) </span> 
+                                                <input type="name" class="form-control" id="attendance_date" name="attendance_date" value="{{attendance.attendance_date}}" readonly>
+                                              </div>
+                                              <div class="form-group">
+                                                <label for="attendance_status" class="font-weight-bold">Attendance Status</label>
+                                                <select class="form-control" id="attendance_status" name="attendance_status" required>
+                                                  <option value="P" {% if attendance.attendance_status == 'P' %}selected{% endif %}>Present</option>
+                                                  <option value="A" {% if attendance.attendance_status == 'A' %}selected{% endif %}>Absent</option>
+                                                </select>
+                                              </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                              <button type="submit" class="btn btn-primary">Save Changes</button>
+                                            </div>
+                                          </form>
+                                        </div>
+                                    </div>
+                                </td>
+                            <td cs="text-center"><span></span></td>
+                        </tr>
+                        {%endfor%}
+                        {% else %}
+                        <p class="text-center text-danger">No result found</p>
+                        {%endif%}
+          
+                    </tbody>
+
+                </table>
+                
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+
+{%endblock%}

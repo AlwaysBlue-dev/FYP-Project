@@ -1,0 +1,172 @@
+{% extends 'faculty/fac_menu.html' %}
+{% load static %}
+
+{% block title %}{{classroom.class_name}}{% endblock%}
+{% block style%}
+<style>
+    /* Add some custom styling to the form */
+    form {
+        max-width: 500px;
+        margin: auto;
+    }
+    label, input {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    input[type="submit"] {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+    }
+    /* Add custom styling to the table */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+    th, td {
+        text-align: center;
+        padding: 8px;
+    }
+    th {
+        background-color: #4CAF50;
+        color: white;
+        white-space: nowrap;
+    }
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    
+    /* Media queries for responsiveness */
+    @media only screen and (max-width: 768px) {
+        form {
+            max-width: 100%;
+        }
+        input[type="submit"] {
+            font-size: 14px;
+        }
+        table {
+            font-size: 14px;
+        }
+    }
+    @media only screen and (max-width: 576px) {
+        form {
+            max-width: 100%;
+        }
+        input[type="submit"] {
+            font-size: 12px;
+        }
+        table {
+            font-size: 10px;
+        }
+        .card{
+            width:90%;
+        }
+       
+    }
+
+</style>
+{% endblock%}
+
+{% block body %}
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title text-center"><span style="color:green">{{ classroom.class_name }}</span> </br><span style="color:green"> Upload Lecture:</span>  </h3>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-floating mb-3">
+                            <label for="lec_name">Lecture Title:</label>
+                            <input type="text" class="form-control" name="lec_name" id="lec_name" placeholder=" " required>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <label for="lec_desc">Lecture Description:</label>
+                            <textarea class="form-control" name="lec_desc" id="lec_desc" placeholder=" " required></textarea>
+                        </div>
+                        <select name="classroom" id="classroom" hidden>
+                            <option value="{{ classroom.id }}" selected>{{ classroom.classroom_name }}</option>
+                        </select>
+                        <p class="text-muted"><i class="fas fa-lightbulb"></i> upload pdf </p>
+                        <div class="form-file mb-3">
+                            <input type="file" class="form-file-input" name="lec_file" id="lec_file" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Upload</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="table-responsive">
+               <!-- Table -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            {% comment %} <th>Lecture File</th> {% endcomment %}
+            <th>Uploaded At</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for lecture in lectures %}
+        <tr>
+            <td>{{ lecture.lec_name }}</td>
+            <td>{{ lecture.lec_desc }}</td>
+            {% comment %} <td> <a href="{{ lecture.lec_file.url }}" class="btn btn-success" download>Download</a></td> {% endcomment %}
+            <td>{{ lecture.uploaded_at }}</td>
+            <td>
+                <!-- Delete button -->
+                <button type="button" class="btn btn-danger" data-toggle="modal"
+                    data-target="#deleteLectureModa{{lecture.lec_id}}">Delete</button>
+
+                <!-- Modal pop-up -->
+                <div class="modal fade" id="deleteLectureModa{{lecture.lec_id}}" tabindex="-1" role="dialog"
+                    aria-labelledby="deleteLectureModalLabe{{lecture.lec_id}}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteLectureModalLabe{{lecture.lec_id}}">Delete</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to delete this lecture {{lecture.lec_name}}?
+                            </div>
+                            <div class="modal-footer">
+                                <form action="/fac_dashboard/delete_lecture/{{lecture.lec_id}}" method="POST">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                {%empty %}
+                <td>No Lecture Uploaded</td>
+                <td>No Lecture Uploaded</td>
+                <td>No Lecture Uploaded</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+                    
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,292 @@
+{% extends 'faculty/fac_menu.html' %}
+{% load static %}
+
+{% block title %} Map CLO's PLO's {% endblock %}
+
+{% block style %}
+<style>
+    /* add any custom styles here */
+    .form-control {
+        background-color: #fff;
+    }
+
+    .question-card {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1), 0 6px 6px rgba(0,0,0,0.2);
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+    
+    .question-card .card-header {
+        background-color: #f7f7f7;
+        border-radius: 10px 10px 0 0;
+        border-bottom: none;
+        padding: 20px 30px;
+        margin-bottom: 20px;
+        font-size: 24px;
+        font-weight: 600;
+    }
+    
+    .question-card .form-row {
+        margin-bottom: 20px;
+    }
+    
+    .question-card .form-group {
+        margin-bottom: 0;
+    }
+    
+    .question-card .form-group label {
+        font-weight: 600;
+    }
+    
+    .question-card .form-control {
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+        background-color: #f7f7f7;
+        padding: 15px;
+        font-size: 16px;
+        font-weight: 400;
+        color: #666;
+        height: auto;
+    }
+/* custom css for the question cards */
+.card.question-card {
+    border: none;
+    /* background-color: #f8f9fa; */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card.question-card .card-header {
+    background-color: #fff;
+    border-bottom: none;
+}
+
+.card.question-card .card-body {
+    padding: 1rem;
+}
+
+.card-deck .card:not(:last-child) {
+    margin-right: 1rem;
+}
+
+.remove-question-btn {
+    color: #dc3545;
+}   
+</style>
+{% endblock %}
+
+{% block body %}
+
+
+<div class='container'>
+<div class="card p-4 mt-3">
+   
+    <form method="GET" enctype="multipart/form-data" >
+       
+        <div class="form-row">
+            <div class="form-group col-md-12">
+              <label for="input-course" class="form-label">Course:</label>
+              <select name="course" id="input-course" class="form-control custom-select" required>
+                <option value="" selected >-- Select a course --</option>
+                {% for course in assign_courses %}
+                  <option value="{{course.assign_course.course_name}}"{% if course.assign_course.course_name == selected_course %}selected{% endif %}>{{course.assign_course.course_name}}</option>
+                {% endfor %}
+              </select>
+              <button type="submit" class="btn btn-success mt-2">Filter</button> 
+            </div>
+        </div>
+        </form>
+        {% if messages %}
+        <div class="alert alert-danger mt-3 m-auto" style="width:650px;">
+            <ul>
+                {% for message in messages %}
+                    <h6 class="text-center text-danger">{{ message }}</h6>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+   
+        {%if mapped_data%}
+        <form method="POST" enctype="multipart/form-data" >
+            {% csrf_token %}
+            <div class="row">
+            <div class="form-group col-md-6">
+                <label for="input-assessment-type" class="form-label">Assessment Type:</label>
+                <select name="assessment_type" id="input-assessment-type" class="form-control custom-select" required>
+                  <option value="" selected >-- Select an assessment type --</option>
+                  <option value="Quiz">Quiz</option>
+                  <option value="Assignment">Assignment</option>
+                  <option value="Mid Term">Mid Term</option>
+                  <option value="Final Term">Final Term</option>
+                </select>
+            </div>
+       
+            <div class="form-group col-md-6">
+                <label for="input-mapped_clos_plos" class="form-label">Mapped Clo's Plo's:</label>
+            <select name="mapped_clos_plos" id="input-mapped_clos_plos" class="form-control custom-select" required>
+              <option value="" selected >-- Select Mapped Clo's Plo's --</option>
+              {%for mapped_clo_plo in mapped_data%}
+              <option value="{{mapped_clo_plo.mapped_clos_plos}}">{{mapped_clo_plo.mapped_clos_plos}}</option>
+           {%endfor%}
+            </select>
+              </div>
+            </div>  
+
+              
+              <div id="quiz-assignment-fields" style="display:none;">
+                <div class="row">
+                  <div class="form-group col-md-4">
+                    <label for="quiz-assignment-number" class="form-label">Assessment Name:</label>
+                    <input type="text" name="assessment_name" id="quiz-assignment-number" class="form-control" placeholder="Quiz/Assignment #" required
+                      readonly>
+                  </div>
+
+                  <div class="form-group col-md-4">
+                    <label for="total-marks">Total Marks</label>
+                    <input type="number" step="0.1" class="form-control" name="total_marks" id="total-marks" placeholder="Total Marks" required>
+                 </div>
+              
+              
+                  {% comment %} <div class="form-group col-md-4">
+                    <label for="clos-cover" class="form-label">CLO's Cover:</label>
+                    <input type="text" name="clos_cover" id="clos-cover" placeholder="CLO-#,#,#" class="form-control"
+                      required>
+                  </div> {% endcomment %}
+              
+             
+                <div class="form-group col-md-4">
+                  <label for="num-questions">Total Questions</label>
+                  <input type="number" class="form-control" id="num-question" name="num_question" min="1" max="10"
+                    placeholder="Total Questions" required>
+                </div>
+            </div>
+              </div>
+            
+        
+            <div class="form-group col-md-12">
+
+                {% if messages %}
+                <div class="alert alert-danger mt-3 m-auto" style="width:650px;">
+                    <ul>
+                        {% for message in messages %}
+                            <h6 class="text-center text-danger">{{ message }}</h6>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            
+                <div class="questions-container">
+                    <div class="row">
+                        <div class="col-md-4 mt-5">
+                            <!-- first card goes here -->
+                        </div>
+                        <div class="col-md-4">
+                            <!-- second card goes here -->
+                        </div>
+                        <div class="col-md-4">
+                            <!-- third card goes here -->
+                        </div>
+                    </div>
+                   
+                </div>
+               
+            </div>
+   
+            <button type="submit" class="btn btn-success">Submit</button> 
+      
+        </form>
+</div>
+
+</div>
+
+</div>
+{%endif%}
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function() {
+        // Add question cards based on user input
+        $("#num-question").on("change", function() {
+            var numQuestions = parseInt($(this).val());
+            $(".question-card-col").remove();
+            for (var i = 1; i <= numQuestions; i++) {
+                var questionHtml = `
+                
+                    <div class="col-md-4 question-card-col">
+                        <div class="card question-card">
+                            <div class="card-header">
+                                <span class="text-danger">Question ${i}</span>
+                                <button type="button" class="close float-right remove-question-btn" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+    
+
+    
+                                <div class="form-row question-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="question_num_${i}">Question Number</label>
+                                        <input type="text" class="form-control" name="question_num_${i}" placeholder="Question #" value="Question ${i}" required>
+                                    </div>
+                                </div>
+    
+                                <div class="form-row question-row">
+                                    <div class="form-group col-md-12 mt-2">
+                                        <label for="map_clos_plos_cover_${i}">Question Wise Mapping</label>
+                                        <input type="text" class="form-control" name="map_clos_plos_cover_${i}" placeholder="CLO-#, PLO-#,#,#" required>
+                                    </div>
+                                </div>
+    
+                          
+                        </div>
+                    </div>
+                `;
+                $(".questions-container .row").append(questionHtml);
+            }
+        });
+    
+        // Remove a question card column
+        $(".questions-container").on("click", ".remove-question-btn", function() {
+            var cardCol = $(this).closest(".question-card-col");
+            cardCol.remove();
+        });
+    });
+  
+const assessmentTypeSelect = document.getElementById('input-assessment-type');
+const quizAssignmentFields = document.getElementById('quiz-assignment-fields');
+const assessmentNameInput = document.getElementById('quiz-assignment-number');
+const totalMarksInput = document.getElementById('total-marks');
+
+if (assessmentTypeSelect) {
+assessmentTypeSelect.addEventListener('change', function() {
+  if (assessmentTypeSelect.value === 'Quiz' || assessmentTypeSelect.value === 'Assignment') {
+    quizAssignmentFields.style.display = 'block';
+    assessmentNameInput.value = '';
+    totalMarksInput.value = '';
+    assessmentNameInput.removeAttribute('readonly');
+    totalMarksInput.removeAttribute('readonly');
+  } else if (assessmentTypeSelect.value === 'Mid Term') {
+    quizAssignmentFields.style.display = 'block';
+    assessmentNameInput.value = 'Mid Term';
+    totalMarksInput.value = '20';
+    assessmentNameInput.setAttribute('readonly', 'readonly');
+    totalMarksInput.setAttribute('readonly', 'readonly');
+  } else if (assessmentTypeSelect.value === 'Final Term') {
+    quizAssignmentFields.style.display = 'block';
+    assessmentNameInput.value = 'Final Term';
+    totalMarksInput.value = '40';
+    assessmentNameInput.setAttribute('readonly', 'readonly');
+    totalMarksInput.setAttribute('readonly', 'readonly');
+  } else {
+    quizAssignmentFields.style.display = 'none';
+    assessmentNameInput.value = '';
+  }
+});
+}
+</script>
+
+
+{% endblock %}

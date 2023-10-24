@@ -1,0 +1,150 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title> {% block title %} {% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
+    integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css?family=Source+Serif+Pro:400,600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="fonts/icomoon/style.css">
+
+    <link rel="stylesheet" href="{%static 'sidebar_css/owl.carousel.min.css' %}">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{%static 'sidebar_css/bootstrap.min.css' %}">
+    
+    <!-- Style -->
+    <link rel="stylesheet" href="{%static 'sidebar_css/style.css' %}">
+
+    {% block link %} {% endblock %}
+    
+    <style>
+        html {
+            scroll-behavior: smooth;
+          }
+       body {
+              overflow-x:hidden;
+              }
+      
+          .nav_bg {
+            background-color: #1DB954;
+          }
+          
+    </style>
+    {% block style %} {% endblock %}
+  </head>
+  <body>
+    <!-- Top Bar -->
+    <nav class="navbar navbar-expand-lg bg-light">
+        <a class="navbar-brand" href="/hod_dashboard/">
+            <img src="{% static 'logo/zu_logo_rounded2.jpg'%}" width="30" height="30"
+                class="d-inline-block align-top rounded-circle" alt="Logo">
+          <span style="color:green;"><b>Ziauddin University</b> </span>
+        </a>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                    {% comment %} <img src="https://via.placeholder.com/40x40" width="30" height="30"
+                        class="d-inline-block align-top rounded-circle" alt="Profile Picture"> {% endcomment %}
+                        <img src="{{hod_data.0.hod_img.url}}" alt="{{hod_data.0.hod_name}}" class="img-fluid mt-2 rounded-circle" style="width:25px">
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+
+                  <a class="dropdown-item" href="/logout/"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>       
+                
+                </div>
+              
+            </li>
+        </ul>
+    </nav>
+
+
+<aside class="sidebar">
+  <div class="toggle">
+    <a href="#" class="burger js-menu-toggle" data-toggle="collapse" data-target="#main-navbar">
+          <span></span>
+        </a>
+  </div>
+  <div class="side-inner">
+    {% if hod_data %}
+    <div class="profile">
+      <img src="{{hod_data.0.hod_img.url}}" alt="{{hod_data.0.hod_name}}" class="img-fluid mt-2">
+        <h3 class="name" style="font-family: 'Lilita One', cursive;">{{hod_data.0.hod_name}}</h3>
+        <h6 class="text-muted mt-1" style="font-size:15px;font-family: 'Lilita One', cursive;">{{ hod_data.0.dep_name }} Department </h6>
+        <h6 class="text-muted"style="font-size:13px;">{{ hod_data.0.hod_email }}</h6>
+    </div>
+
+ 
+    <div class="nav-menu">
+      <ul class="list-unstyled components">
+        <li class="nav-item {% if request.path == '/hod_dashboard/' %}active{% endif %}">
+          <a class="nav-link" href="/hod_dashboard/"><i class="fas fa-home"></i>&nbsp Dashboard</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</aside>
+
+{%else%}
+<div class="profile">
+    <img src="{%static 'user.png' %}" alt="HOD name" class="img-fluid mt-2 ">
+    <h3 class="name">HOD Name</h3>
+    <h6 class="text-muted mt-1">Department </h6>
+    <h6 class="text-muted">Email</h6>
+</div>
+<div class="nav-menu">
+    <ul>
+        <li class="nav-item {% if request.path == '/hod_dashboard/' %}active{% endif %}">
+          <a class="nav-link" href="/hod_dashboard/"><i class="fas fa-home"></i> Dashboard</a>
+        </li>
+       
+  </ul>
+</div>
+</div>
+</aside>
+{%endif%}
+
+<!-- Page Content -->
+
+<main>
+
+  <div class="container-fluid">
+    <div class="justify-content-center">
+
+      {%block body%} {%endblock%}
+    </div>
+  </div>
+
+</main>
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+  integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+  crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+  integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+  crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+  integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+  crossorigin="anonymous"></script>
+
+  <script src="{%static 'js/main.js' %}"></script>
+</body>
+
+</html>
