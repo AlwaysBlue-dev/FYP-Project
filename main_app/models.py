@@ -7,18 +7,20 @@ class LoginUser(models.Model):
     HeadofDepart = 'HOD'
     Student = 'Student'
     Teacher = 'Teacher'
+    Both = 'HOD & Teacher'
 
-    YEAR_IN_SCHOOL_CHOICES = [
+    CHOICES = [
         (HeadofDepart, 'HOD'),
         (Student, 'Student'),
         (Teacher, 'Teacher'),
+        (Both, 'HOD & Teacher'),
     ]
     user_id = models.AutoField(primary_key=True)
     user_name = models.CharField(max_length=100, default="")
     user_email = models.CharField(max_length=100, default="")
     user_password = models.CharField(max_length=100, default="")
     user_type = models.CharField(
-        max_length=10, choices=YEAR_IN_SCHOOL_CHOICES, default="")
+        max_length=20, choices=CHOICES, default="")
 
     def __str__(self):
         return self.user_email
@@ -391,10 +393,10 @@ class AddAssessmentClosPlo (models.Model):
     assessment_type = models.CharField(max_length=50, default="")
     assessment_name = models.CharField(max_length=50, default="")
     mapped_clos_plos =models.CharField(max_length=100, default="")
-    question_num = models.CharField(max_length=50, default="")
+    # question_num = models.CharField(max_length=50, default="")
     total_questions = models.CharField(max_length=50, default="" )
     total_marks = models.FloatField(default=0)
-    question_wise_map_clos_plos = models.CharField(max_length=50, default="")
+    question_wise_map_clos_plos = models.CharField(max_length=255, default="")
 
     def __str__(self):
         return f"{self.fac.fac_name} added {self.assessment_type} assessment of {self.course}"

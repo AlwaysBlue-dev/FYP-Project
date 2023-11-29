@@ -63,9 +63,16 @@
                         <img src="{{hod_data.0.hod_img.url}}" alt="{{hod_data.0.hod_name}}" class="img-fluid mt-2 rounded-circle" style="width:25px">
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-
+                  {% if user_type == 'HOD & Teacher' %}
+                  <form method="POST" action="/choose_role/">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link" name="chosen_role" value="Teacher">
+                      <i class="fa fa-exchange" aria-hidden="true"></i> Switch to Teacher
+                    </button>
+                  </form>
+                {% endif %}
                   <a class="dropdown-item" href="/logout/"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>       
-                
+                 
                 </div>
               
             </li>

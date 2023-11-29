@@ -3,7 +3,6 @@ from django.urls import path
 from main_app import views
 
 
-
 #Django Admin Customization
 admin.site.site_header = "ZUFESTM Admin Panel"
 admin.site.site_title = "ZUFESTM Portal Admin Panel"
@@ -14,6 +13,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", views.user_login, name='user_login'),
     path("login/", views.user_login, name='user_login'),
+    path("choose_role/", views.choose_role, name='choose_role'),
     path("logout/", views.user_logout, name='user_logout'),
     path('stu_dashboard/', views.stu_dashboard_view, name='stu_dashboard'),
     path('stu_dashboard/stu_profile', views.stu_profile, name='stu_profile'),
@@ -63,6 +63,9 @@ urlpatterns = [
     path('stu_dashboard/stu_delete_assignment/<int:assignment_id>', views.stu_delete_assignment, name='stu_delete_assignment'),
     
     path('stu_dashboard/classroom_dashboard/<int:joined_classroom_id>/announcement_view', views.stu_announcement_view, name='stu_announcement_view'),
+    path('stu_dashboard/result_view', views.stu_view_result, name='stu_view_result'),
+
+    path('stu_dashboard/attendance_view', views.stu_view_attendance, name='view_attendance'),
 
     path('fac_dashboard/attendance/', views.fac_attendance, name='fac_attendance'),
 

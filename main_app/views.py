@@ -14,69 +14,74 @@ from django.db.models import Max
 from datetime import datetime, date
 import json
 from django.http import JsonResponse,  HttpResponseBadRequest
+from django.db import connection
+import csv
 
 # Create your views here.
 def user_login(request):
     if request.method == 'POST':
         # Retrieve the email and password from the form
-        email = request.POST['email']
-        password = request.POST['password']
+        email = request.POST.get('email')
+        password = request.POST.get('password')
 
         # Attempt to authenticate the user by filtering the LoginUser model by email and password
-        user = LoginUser.objects.filter(
-            user_email=email, user_password=password).first()
+        user = LoginUser.objects.filter(user_email=email, user_password=password).first()
 
         # If a user was found, proceed to render the appropriate dashboard
         if user is not None:
             request.session['user_id'] = user.user_id
 
             if user.user_type == 'Student':
-
-                # Render the student dashboard and set the URL to 'stu_dashboard'
                 return redirect('/stu_dashboard')
             elif user.user_type == 'HOD':
-
-                # Render the HOD dashboard and set the URL to 'hod_dashboard'
                 return redirect('/hod_dashboard')
             elif user.user_type == 'Teacher':
-
-                # Render the teacher dashboard and set the URL to 'fac_dashboard'
                 return redirect('/fac_dashboard')
+            elif user.user_type == 'HOD & Teacher':
+                context = {'user_id': user.user_id, 
+                           'user_type':user.user_type,
+                           'user_detail':Faculty.objects.filter(fac_email__user_email=user.user_email).first()}
+                return render(request, 'login.html', context)
         # If no user was found, return an error message on the login page
         else:
             error_message = 'Invalid login credentials'
             return render(request, 'login.html', {'error_message': error_message})
+
     # If the request method is not POST, check if the user is already authenticated
-    else:
-        # Check if the user id is stored in the session
-        if 'user_id' in request.session:
-            # If the user id is stored in the session, retrieve the user information from the LoginUser model
-            user = LoginUser.objects.filter(
-                user_id=request.session['user_id']).first()
+    elif 'user_id' in request.session:
+        # If the user id is stored in the session, retrieve the user information from the LoginUser model
+        user = LoginUser.objects.filter(user_id=request.session['user_id']).first()
 
-            # If the user was found, render the appropriate dashboard
-            if user is not None:
-                user_id = request.session.get('user_id')
-                if user.user_type == 'Student':
+        # If the user was found, render the appropriate dashboard
+        if user is not None:
+            user_id = request.session.get('user_id')
+            if user.user_type == 'Student':
+                return redirect('/stu_dashboard')
+            elif user.user_type == 'HOD':
+                return redirect('/hod_dashboard')
+            elif user.user_type == 'Teacher':
+                return redirect('/fac_dashboard')
+            elif user.user_type == 'HOD & Teacher':
+                context = {'user_id': user.user_id, 
+                           'user_type':user.user_type,
+                           'user_detail':Faculty.objects.filter(fac_email__user_email=user.user_email).first()}
+                return render(request, 'login.html', context)
 
-                    # Set the URL to 'stu_dashboard'
-                    return redirect('/stu_dashboard')
-                elif user.user_type == 'HOD':
+    # If the user id is not stored in the session or none of the conditions are met, render the login page
+    return render(request, 'login.html')
 
-                    # Set the URL to 'hod_dashboard'
+def choose_role(request):
+    if request.method == 'POST':
+        chosen_role = request.POST.get('chosen_role')
 
-                    return redirect('/hod_dashboard')
-                elif user.user_type == 'Teacher':
+        if chosen_role == 'HOD':
+            return redirect('/hod_dashboard')
+        elif chosen_role == 'Teacher':
+            return redirect('/fac_dashboard')
 
-                    # Set the URL to 'fac_dashboard'
-
-                    return redirect('/fac_dashboard')
-            else:
-                return render(request, 'login.html')
-        else:
-            # If the user id is not stored in the session, render the login page
-            return render(request, 'login.html')
-
+    # Handle invalid or no selection
+    error_message = 'Invalid role selection'
+    return render(request, 'login.html', {'error_message': error_message})
 
 def user_logout(request):
     # Remove the user id from the session
@@ -119,10 +124,13 @@ def hod_dashboard_view(request):
         user_id = request.session.get('user_id')
 
         hod_data = HOD.objects.filter(user_id=user_id)
+        user= LoginUser.objects.filter(user_id=user_id).first()
+        user_type = user.user_type
 
         if hod_data:
             context = {
                 'hod_data': hod_data,
+                'user_type':user_type,
             }
             return render(request, 'hod/hod_dashboard.html', context)
 
@@ -138,6 +146,8 @@ def fac_dashboard_view(request):
         user_id = request.session.get('user_id')
         fac_data = Faculty.objects.filter(user_id=user_id)
         logged_in_user_id = request.session.get('user_id')
+        user= LoginUser.objects.filter(user_id=user_id).first()
+        user_type = user.user_type
         # assign_course = AssignCourse.objects.filter(
         #     faculty_id=fac_data[0].fac_id)
 
@@ -154,6 +164,7 @@ def fac_dashboard_view(request):
         context = {
             'fac_data': fac_data,
             'logged_in_user_id':logged_in_user_id,
+            'user_type':user_type,
             # 'classrooms': classrooms,
             # 'courses': courses,
             # 'fac_job_details':fac_job_detail
@@ -982,6 +993,7 @@ def fac_attendance(request, faculty_id=None):
 
         assign_course = AssignCourse.objects.filter(
             faculty_id=fac_data[0].fac_id, active=True)
+        
 
         # # Retrieve the course IDs from the AssignCourse queryset
         # course_ids = assign_course.values_list('assign_course', flat=True)
@@ -1297,62 +1309,60 @@ def add_assessment_clos_plos(request):
             if not mapped_data:
                 messages.error(request, f"Please first map the CLO's PLO's for {course}")
 
-
         if request.method == 'POST':
-           
             assessment_type = request.POST.get('assessment_type')
             assessment_name = request.POST.get('assessment_name')
             mapped_clos_plos = request.POST.get('mapped_clos_plos')
             total_marks = request.POST.get('total_marks')
-           
             total_questions = int(request.POST.get('num_question', 0))
-           
 
             if not (course and assessment_type and assessment_name and total_marks and mapped_clos_plos and total_questions):
                 messages.error(request, "Please fill all the fields")
                 return redirect('/fac_dashboard/add_assessment_clos_plos')
 
-            for i in range(1,  total_questions+1): 
+            # Concatenate question numbers and clo plo values
+            question_wise_map_clos_plos = ""
+            for i in range(1, total_questions + 1): 
                 question_num = request.POST.get(f'question_num_{i}')
-                question_wise_map_clos_plos = request.POST.get(f'map_clos_plos_cover_{i}')
-               
+                clo_plo = request.POST.get(f'map_clos_plos_cover_{i}')
 
-                if not (question_num and question_wise_map_clos_plos):
+                if not (question_num and clo_plo):
                     messages.error(request, "Please fill all the fields")
                     return redirect('/fac_dashboard/add_assessment_clos_plos')
 
-               
-                AddAssessmentClosPlo.objects.create(
-                    course=course,
-                    fac=Faculty.objects.filter(user_id=user_id).first(), 
-                    assessment_type = assessment_type,
-                    assessment_name = assessment_name,
-                    mapped_clos_plos =  mapped_clos_plos,
-                    question_num = question_num,
-                    total_questions = total_questions ,
-                    total_marks =  total_marks,
-                    question_wise_map_clos_plos =  question_wise_map_clos_plos,
+                question_wise_map_clos_plos += f"{question_num}: {clo_plo}, "
 
-                )
+            # Remove the trailing comma and space
+            question_wise_map_clos_plos = question_wise_map_clos_plos.rstrip(", ")
+
+            # Save a single entry with concatenated values
+            AddAssessmentClosPlo.objects.create(
+                course=course,
+                fac=Faculty.objects.filter(user_id=user_id).first(),
+                assessment_type=assessment_type,
+                assessment_name=assessment_name,
+                mapped_clos_plos=mapped_clos_plos,
+                total_questions=total_questions,
+                total_marks=total_marks,
+                question_wise_map_clos_plos=question_wise_map_clos_plos,
+            )
 
             messages.success(request, "Submitted successfully")
-           
+
             context = {
                 'fac_data': fac_data,
-                'assign_courses':assign_courses,
-                'mapped_data':mapped_data,
-                'selected_course':course,
+                'assign_courses': assign_courses,
+                'mapped_data': mapped_data,
+                'selected_course': course,
             }
 
             return redirect('/fac_dashboard/add_assessment_clos_plos')
-       
-       
+
         context = {
             'fac_data': fac_data,
-            'assign_courses':assign_courses,
-            'mapped_data':mapped_data,
-            'selected_course':course,
-            
+            'assign_courses': assign_courses,
+            'mapped_data': mapped_data,
+            'selected_course': course,
         }
 
         return render(request, 'faculty/add_assessment_clos_plos.html', context)
@@ -1430,16 +1440,17 @@ def upload_result(request):
             if not assessment_data:
                 messages.warning(request, f'Please add {assessment_type_id} assessment first.')
 
+       
         if request.method == 'POST':
             assessment_name = request.POST.get('assessment_name')
             mapped_plos_clos_cover = request.POST.get('mapped_clos_plos')
             total_marks = request.POST.get('total_marks')
             marks_obtained = request.POST.getlist('marks_obtained')
-           
 
-            # save or update the result data
+            # Save or update the result data
             for i, student in enumerate(students):
-                result, created = UploadResult.objects.get_or_create(
+                # Check if an entry already exists for the given parameters
+                existing_result = UploadResult.objects.filter(
                     student_name=student.student_name,
                     student_enroll_no=student.student_enroll_no,
                     department=student.student_depart.dep_name,
@@ -1449,20 +1460,34 @@ def upload_result(request):
                     course=course_id,
                     fac=Faculty.objects.get(user_id=user_id),
                     assessment_type=assessment_type_id,
-                    defaults={
-                        'assessment_name': assessment_name,
-                        'mapped_plos_clos_cover': mapped_plos_clos_cover,
-                        'total_marks': total_marks,
-                        'obtained_marks': marks_obtained[i],
-                    }
-                )
-                if not created:
-                    result.assessment_name = assessment_name
-                    result.mapped_plos_clos_cover = mapped_plos_clos_cover
-                    result.total_marks = total_marks
-                    result.obtained_marks = marks_obtained[i]
-                    result.save()
-         
+                    assessment_name = assessment_name,
+                ).first()
+
+                if existing_result:
+                    # Entry already exists, update it
+                    existing_result.assessment_name = assessment_name
+                    existing_result.mapped_plos_clos_cover = mapped_plos_clos_cover
+                    existing_result.total_marks = total_marks
+                    existing_result.obtained_marks = marks_obtained[i]
+                    existing_result.save()
+                else:
+                    # Entry does not exist, create a new one
+                    UploadResult.objects.create(
+                        student_name=student.student_name,
+                        student_enroll_no=student.student_enroll_no,
+                        department=student.student_depart.dep_name,
+                        programme=student.student_depart_prog.prog_name,
+                        batch=student.student_batch,
+                        time_shift=student.student_time_shift,
+                        course=course_id,
+                        fac=Faculty.objects.get(user_id=user_id),
+                        assessment_type=assessment_type_id,
+                        assessment_name=assessment_name,
+                        mapped_plos_clos_cover=mapped_plos_clos_cover,
+                        total_marks=total_marks,
+                        obtained_marks=marks_obtained[i],
+                    )
+
         context = {
             'departments': departments,
             'programmes': programmes,
@@ -1502,8 +1527,6 @@ def view_result(request):
         }
         return render(request, 'faculty/view_result.html', context)
 
-import csv
-
 def export_csv(request):
     if 'user_id' not in request.session:
         return redirect('/login')
@@ -1524,5 +1547,105 @@ def export_csv(request):
             writer.writerow([result.student_name, result.course, result.assessment_type, result.assessment_name, result.mapped_plos_clos_cover, result.total_marks, result.obtained_marks])
 
         return response
-
     
+# # # # Student View Result Section # # # #
+def stu_view_result(request):   
+    if 'user_id' not in request.session:
+        return redirect('/login')
+    else:
+        user_id = request.session.get('user_id')
+        stu_data = Student.objects.filter(user_id=user_id)
+       
+        user_name = stu_data[0].student_name
+        
+        # Get the registered courses for the student
+        course_register_data = StudentRegisterCourse.objects.filter(
+            batch_year=stu_data[0].student_batch,
+            time_shift=stu_data[0].student_time_shift,
+            depart_programme=stu_data[0].student_depart_prog 
+        )
+        stu_semester = course_register_data[0].semester
+       
+        # Extract the course names from the queryset
+        course_names = course_register_data.values_list('courses__course_name', flat=True)
+
+        # print("Course Names:", course_names)  # Debug print
+
+         # Specify the columns you want to include
+        selected_columns = ['Student', 'Enrollment', 'Course', 'TotalMarks', 'ObtainedMarks', 'Grade']
+        # Fetch results using raw SQL query
+        with connection.cursor() as cursor:
+            cursor.execute(
+                '''
+                SELECT *
+                FROM student_result_view
+                WHERE Student = %s AND Course IN %s
+                ''',
+                [user_name, tuple(course_names)]
+            )
+            columns = [desc[0] for desc in cursor.description if desc[0] in selected_columns]
+            result_data = cursor.fetchall()
+
+        # print("Result Data:", result_data)  # Debug print
+
+        context = {
+            'columns': columns,
+            'stu_data': stu_data,
+            'course_register_data': course_register_data,
+            'result_data': result_data,
+            'stu_semester':stu_semester,
+        }
+        return render(request, 'student/result_view.html', context)
+
+# # # # Student Attendance View Section # # # #
+def stu_view_attendance(request):   
+    if 'user_id' not in request.session:
+        return redirect('/login')
+    else:
+        user_id = request.session.get('user_id')
+        stu_data = Student.objects.filter(user_id=user_id)
+
+        # Get the registered courses for the student
+        course_register_data = StudentRegisterCourse.objects.filter(
+            batch_year=stu_data[0].student_batch,
+            time_shift=stu_data[0].student_time_shift,
+            depart_programme=stu_data[0].student_depart_prog 
+        )
+
+        user_name = stu_data[0].student_name
+        # print(user_name)
+         # Extract the course names from the queryset
+        course_names = course_register_data.values_list('courses__course_name', flat=True)
+        # print(course_names)
+
+        # Define context outside of the if statement
+        context = {
+            'stu_data': stu_data,
+            'course_register_data': course_register_data,
+        }
+
+        if course_register_data and course_register_data[0].active:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    '''
+                    SELECT *
+                    FROM student_attendance_view
+                    WHERE Student = %s AND Course IN %s
+                    ''',
+                    [user_name, tuple(course_names)]
+                )
+                columns = [desc[0] for desc in cursor.description]
+                result_data = cursor.fetchall()
+                
+                context.update({
+                    'columns': columns,
+                    'result_data': result_data,
+                })
+
+                print(result_data)
+        else:
+            print("Not Hello")
+        
+        return render(request, 'student/attendance_view.html', context)
+
+

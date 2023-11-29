@@ -1,0 +1,103 @@
+{% extends 'student/stu_menu.html' %}
+{% block title %} Result {% endblock %}
+
+{% block style %}
+<style>
+    /* Add your custom styles here */
+
+    /* Example: Custom table styling */
+    .table-container {
+        margin-top: 20px;
+    }
+
+    /* Example: Bootstrap 4.0.0 table classes */
+    .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        color: #212529;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.75rem;
+        vertical-align: top;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .table thead th {
+        vertical-align: bottom;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table tbody + tbody {
+        border-top: 2px solid #dee2e6;
+    }
+
+    /* Example: Responsive table */
+    @media (max-width: 575.98px) {
+        .table-responsive-sm {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            -ms-overflow-style: -ms-autohiding-scrollbar;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .table-responsive-md {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            -ms-overflow-style: -ms-autohiding-scrollbar;
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        .table-responsive-lg {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            -ms-overflow-style: -ms-autohiding-scrollbar;
+        }
+    }
+
+    @media (max-width: 1199.98px) {
+        .table-responsive-xl {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            -ms-overflow-style: -ms-autohiding-scrollbar;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <div class="container table-container">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        {% for column in columns %}
+                            <th>{{ column}}</th>
+                        {% endfor %}
+                        <th>Semester</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in result_data %}
+                        <tr>
+                            <td>{{ row.0 }}</td>
+                            <td>{{ row.1 }}</td>
+                            <td>{{ row.3 }}</td>
+                            <td>{{ row.6 }}</td>
+                            <td>{{ row.7 }}</td>
+                            <td>{{ row.8 }}</td>
+                            <td>{{stu_semester}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

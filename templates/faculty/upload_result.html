@@ -172,8 +172,10 @@
                             <option value="" selected >-- Select an assessment type --</option>
                             <option value="Quiz"{% if selected_assessment_type_id == 'Quiz'%}selected{% endif %}>Quiz </option>
                             <option value="Assignment"{% if selected_assessment_type_id == 'Assignment' %}selected{% endif %}>Assignment</option>
+                            <option value="Presentation"{% if selected_assessment_type_id == 'Presentation'%}selected{% endif %}>Presentation</option>
                             <option value="Mid Term"{% if selected_assessment_type_id == 'Mid Term'%}selected{% endif %}>Mid Term</option>
                             <option value="Final Term"{% if selected_assessment_type_id == 'Final Term' %}selected{% endif %}>Final Term</option>
+                            
                           </select>
                         </div>
                         
@@ -205,6 +207,8 @@
                                   <th class="text-left">Total Quiz</th>
                                   {%elif selected_assessment_type_id == 'Assignment'%}
                                   <th class="text-left">Total Assignment</th>
+                                  {%elif selected_assessment_type_id == 'Presentation'%}
+                                  <th class="text-left">Total Presentation</th>
                                   {%elif selected_assessment_type_id == 'Mid Term' or selected_assessment_type_id == 'Final Term'%}
                                   <th class="text-left">Total Assessment</th>
                                   {%endif%}

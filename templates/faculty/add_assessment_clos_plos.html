@@ -120,6 +120,7 @@
                   <option value="Assignment">Assignment</option>
                   <option value="Mid Term">Mid Term</option>
                   <option value="Final Term">Final Term</option>
+                  <option value="Presentation">Presentation</option>
                 </select>
             </div>
        
@@ -139,7 +140,7 @@
                 <div class="row">
                   <div class="form-group col-md-4">
                     <label for="quiz-assignment-number" class="form-label">Assessment Name:</label>
-                    <input type="text" name="assessment_name" id="quiz-assignment-number" class="form-control" placeholder="Quiz/Assignment #" required
+                    <input type="text" name="assessment_name" id="quiz-assignment-number" class="form-control" placeholder="Quiz/Assignment/Presentation #" required
                       readonly>
                   </div>
 
@@ -262,7 +263,7 @@ const totalMarksInput = document.getElementById('total-marks');
 
 if (assessmentTypeSelect) {
 assessmentTypeSelect.addEventListener('change', function() {
-  if (assessmentTypeSelect.value === 'Quiz' || assessmentTypeSelect.value === 'Assignment') {
+  if (assessmentTypeSelect.value === 'Quiz' || assessmentTypeSelect.value === 'Assignment' ||  assessmentTypeSelect.value === 'Presentation'){
     quizAssignmentFields.style.display = 'block';
     assessmentNameInput.value = '';
     totalMarksInput.value = '';
@@ -280,7 +281,7 @@ assessmentTypeSelect.addEventListener('change', function() {
     totalMarksInput.value = '40';
     assessmentNameInput.setAttribute('readonly', 'readonly');
     totalMarksInput.setAttribute('readonly', 'readonly');
-  } else {
+  } else { 
     quizAssignmentFields.style.display = 'none';
     assessmentNameInput.value = '';
   }

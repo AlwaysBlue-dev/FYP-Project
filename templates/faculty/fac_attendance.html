@@ -50,7 +50,7 @@
               <h5 class="card-title">{{ course.assign_course.course_name }}</h5>
               <p class="card-text">{{ course.dep.dep_name }} Department </p>
               <p class="card-text">{{ course.depart_prog.prog_name }} Batch {{ course.batch }} ({{ course.time_shift }})</p>
-              <a href="/fac_dashboard/attendance/student_list/{{ course.id }}" class="btn btn-success size">Mark Attendance</a>
+              <a href="/fac_dashboard/attendance/student_list/{{ course.assign_course_id }}" class="btn btn-success size">Mark Attendance</a>
             </div>
           </div>
         </div>

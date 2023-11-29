@@ -64,6 +64,14 @@
                          <img src="{{fac_data.0.fac_img.url}}" alt="{{fac_data.0.fac_name}}" class="img-fluid mt-2 rounded-circle" style="width:25px">
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                  {% if user_type == 'HOD & Teacher' %}
+                  <form method="POST" action="/choose_role/">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link" name="chosen_role" value="HOD">
+                      <i class="fa fa-exchange" aria-hidden="true"></i> Switch to HOD
+                    </button>
+                  </form>
+                {% endif %}
                   {%if fac_data%}
                   <a class="dropdown-item" href="/fac_dashboard/fac_profile"><i class="fa-sharp fa-solid fa-address-card"></i> Profile </a>
                   <a class="dropdown-item" href="/logout/"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
