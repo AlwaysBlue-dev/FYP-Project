@@ -15,6 +15,11 @@
     {% comment %} <h1 class="mt-4">Student Dashboard</h1> {% endcomment %}
 <div>
     {%if stu_data%}
+    {% comment %} {%for noti_classroom in noti_classrooms%}
+    {%for notification in notifications%}
+    <h1> new {{notification.content_type}} uploaded in {{noti_classroom}} classroom</h1>
+    {%endfor%}
+    {%endfor%} {% endcomment %}
     <div class="container-fluid mt-3">
         <div class="row justify-content-center">
             <div class="col-12 col-md-12 col-lg-12">

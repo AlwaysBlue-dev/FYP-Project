@@ -73,6 +73,7 @@ class Course(models.Model):
     course_id = models.AutoField(primary_key=True)
     course_name = models.CharField(max_length=100, default="")
     course_code = models.CharField(max_length=100, default='')
+    credit_hours = models.FloatField(max_length=100, default="0")
     dep = models.ForeignKey(Department, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -250,6 +251,26 @@ class StudentJoinedClassroom(models.Model):
 
     def __str__(self):
         return f"{self.student} joined {self.classroom}"
+
+class PushNotification(models.Model):
+    CONTENT_TYPES = [
+        ('lecture', 'Lecture'),
+        ('quiz', 'Quiz'),
+        ('assignment', 'Assignment'),
+        ('announcement', 'Announcement'),
+        # Add more content types as needed
+    ]
+
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    content_type = models.CharField(choices=CONTENT_TYPES, max_length=20)
+    content_id = models.PositiveIntegerField()
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.student.student_name} - {self.get_content_type_display()} Notification"
+
 
 
 class TotalBatche(models.Model):

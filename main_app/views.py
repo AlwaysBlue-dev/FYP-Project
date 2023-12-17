@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from .models import LoginUser
 from .forms import ClassroomForm, LectureUploadForm, QuizUploadForm, AssignmentUploadForm, AnnouncementUploadForm, QuizSubmissionForm, AssignmentSubmissionForm
-from .models import Classroom, Faculty, Lecutre, Quiz, Assignment, Announcement, AssignCourse, Course, Student,  StudentJoinedClassroom,  QuizSubmission, AssignmentSubmission, Department, HOD, TotalBatche, StudentAttendance, DepartProgramme, FacultyJobDetail,  StudentRegisterCourse, AddCourseClo, MapCourseCloPlo, AddAssessmentClosPlo, UploadResult 
+from .models import Classroom, Faculty, Lecutre, Quiz, Assignment, Announcement, AssignCourse, Course, Student,  StudentJoinedClassroom,  QuizSubmission, AssignmentSubmission, Department, HOD, TotalBatche, StudentAttendance, DepartProgramme, FacultyJobDetail,  StudentRegisterCourse, AddCourseClo, MapCourseCloPlo, AddAssessmentClosPlo, UploadResult, PushNotification 
 from django.contrib import messages
 import random
 import string
@@ -106,8 +106,13 @@ def stu_dashboard_view(request):
             classrooms = Classroom.objects.filter(
                 class_id__in=[jc.classroom.class_id for jc in joined_classrooms])
 
-            context = {'stu_data': stu_data, 'classrooms': classrooms}
-
+            student_notificaitons = PushNotification.objects.filter(student_id=stu_data[0].student_id)
+            if student_notificaitons:
+                noti_classrooms = Classroom.objects.filter(class_id = student_notificaitons[0].classroom_id)
+                context = {'stu_data': stu_data, 'classrooms': classrooms, 'notifications':student_notificaitons, 'noti_classrooms':noti_classrooms}
+            else:
+                context = {'stu_data': stu_data, 'classrooms': classrooms}
+            
         else:
             # Code for rendering the student dashboard
             return render(request, 'student/stu_dashboard.html')
@@ -452,6 +457,23 @@ def lectures_upload(request, classroom_id):
             lecture.classroom = classroom
             lecture.save()
             # messages.success(request, 'Lecture uploaded successfully!')
+
+            # Get the list of students in the classroom
+            student_classrooms = StudentJoinedClassroom.objects.filter(classroom=classroom)
+            
+            # Assuming you want to use all students who joined the classroom
+            students = student_classrooms.values_list('student', flat=True)
+
+            # Create notification entries for each student
+            for student_id in students:
+                student = get_object_or_404(Student, pk=student_id)
+                PushNotification.objects.create(
+                    student=student,
+                    content_type='lecture', 
+                    content_id=lectures.first().lec_id,
+                    classroom_id = classroom
+                )
+            messages.success(request, 'Lecture uploaded successfully!')
     else:
         form = LectureUploadForm()
 
@@ -480,6 +502,22 @@ def quiz_upload(request, classroom_id):
             quiz.classroom = classroom
             quiz.save()
             # messages.success(request, 'Quiz uploaded successfully!')
+
+            # Get the list of students in the classroom
+            student_classrooms = StudentJoinedClassroom.objects.filter(classroom=classroom)
+            
+            # Assuming you want to use all students who joined the classroom
+            students = student_classrooms.values_list('student', flat=True)
+
+            # Create notification entries for each student
+            for student_id in students:
+                student = get_object_or_404(Student, pk=student_id)
+                PushNotification.objects.create(
+                    student=student,
+                    content_type='quiz', 
+                    content_id=Quiz.objects.filter(classroom_id=classroom_id).first().quiz_id,
+                    classroom_id = classroom_id
+                )
     else:
         form = QuizUploadForm()
 
@@ -508,6 +546,22 @@ def assignment_upload(request, classroom_id):
             assignment.classroom = classroom
             assignment.save()
             # messages.success(request, 'Assignment uploaded successfully!')
+
+             # Get the list of students in the classroom
+            student_classrooms = StudentJoinedClassroom.objects.filter(classroom=classroom)
+            
+            # Assuming you want to use all students who joined the classroom
+            students = student_classrooms.values_list('student', flat=True)
+
+            # Create notification entries for each student
+            for student_id in students:
+                student = get_object_or_404(Student, pk=student_id)
+                PushNotification.objects.create(
+                    student=student,
+                    content_type='assignment', 
+                    content_id=Assignment.objects.filter(assign_id=classroom_id).first().assign_id,
+                    classroom_id = classroom
+                )
     else:
         form = AssignmentUploadForm()
 
@@ -536,6 +590,22 @@ def announcement_upload(request, classroom_id):
             announcement.classroom = classroom
             announcement.save()
             # messages.success(request, 'Announcement uploaded successfully!')
+
+             # Get the list of students in the classroom
+            student_classrooms = StudentJoinedClassroom.objects.filter(classroom=classroom)
+            
+            # Assuming you want to use all students who joined the classroom
+            students = student_classrooms.values_list('student', flat=True)
+
+            # Create notification entries for each student
+            for student_id in students:
+                student = get_object_or_404(Student, pk=student_id)
+                PushNotification.objects.create(
+                    student=student,
+                    content_type='announcement', 
+                    content_id=Announcement.objects.filter(ann_id=classroom_id).first().ann_id,
+                    classroom_id = classroom
+                )
     else:
         form = AssignmentUploadForm()
 
@@ -1572,14 +1642,14 @@ def stu_view_result(request):
         # print("Course Names:", course_names)  # Debug print
 
          # Specify the columns you want to include
-        selected_columns = ['Student', 'Enrollment', 'Course', 'TotalMarks', 'ObtainedMarks', 'Grade']
+        selected_columns = ['StudentName', 'EnrollmentNumber', 'CourseName', 'Grade', 'CH', 'QP', 'Status']
         # Fetch results using raw SQL query
         with connection.cursor() as cursor:
             cursor.execute(
                 '''
                 SELECT *
                 FROM student_result_view
-                WHERE Student = %s AND Course IN %s
+                WHERE StudentName = %s AND CourseName IN %s
                 ''',
                 [user_name, tuple(course_names)]
             )

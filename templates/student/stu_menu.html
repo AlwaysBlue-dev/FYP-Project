@@ -43,7 +43,43 @@
           .nav_bg {
             background-color: #1DB954;
           }
-         
+          .notification-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .notification-dropdown {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          background-color: #fff;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          border-radius: 8px;
+          overflow: hidden;
+          width: 240px;
+          max-height: 200px; /* Set a maximum height for the dropdown */
+          overflow-y: auto; /* Add scrollbar when content overflows */
+          z-index: 1; /* Set a higher z-index to ensure it appears above other elements */
+      }
+        .notification-item {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background-color 0.3s;
+        }
+        
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        
+        .notification-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .notification-container:hover .notification-dropdown {
+            display: block;
+        }
+        
     </style>
     {% block style %} {% endblock %}
   </head>
@@ -55,6 +91,24 @@
                 class="d-inline-block align-top rounded-circle" alt="Logo">
           <span style="color:green;"><b>Ziauddin University</b> </span>
         </a>
+        <div class="notification-container">
+          <i class="fas fa-bell" id="notification-icon"></i>
+          <div class="notification-dropdown" id="notification-dropdown">
+              <div class="notification-item">
+                {%if notifications %}
+                {%for noti_classroom in noti_classrooms%}
+                {%for notification in notifications%}
+                  <p> new {{notification.content_type}} uploaded in {{noti_classroom}} classroom <b>({{notification.created_at}})</b></p>
+                  {%endfor%}
+                  {%endfor%}
+                  {%else%}
+                  <p>No Notifications yet !</p>
+                  {%endif%}
+              </div>
+            
+          </div>
+      </div>
+      
         <ul class="navbar-nav ml-auto">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
@@ -190,6 +244,13 @@
   crossorigin="anonymous"></script>
 
   <script src="{%static 'js/main.js' %}"></script>
+
+  <script>
+    document.getElementById('notification-icon').addEventListener('click', function () {
+        var dropdown = document.getElementById('notification-dropdown');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    });
+</script>
 </body>
 
 </html>

@@ -81,7 +81,6 @@
                         {% for column in columns %}
                             <th>{{ column}}</th>
                         {% endfor %}
-                        <th>Semester</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -91,9 +90,12 @@
                             <td>{{ row.1 }}</td>
                             <td>{{ row.3 }}</td>
                             <td>{{ row.6 }}</td>
-                            <td>{{ row.7 }}</td>
-                            <td>{{ row.8 }}</td>
-                            <td>{{stu_semester}}</td>
+                            {% comment %} <td>{{ row.7 }}</td>
+                            <td>{{ row.8 }}</td> {% endcomment %}
+                            <td>{{ row.9 }}</td>
+                            <td>{{ row.10 }}</td>
+                            <td>{{ row.11 }}</td>
+                            {% comment %} <td>{{stu_semester}}</td> {% endcomment %}
                         </tr>
                     {% endfor %}
                 </tbody>
