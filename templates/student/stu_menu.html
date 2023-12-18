@@ -62,6 +62,9 @@
           overflow-y: auto; /* Add scrollbar when content overflows */
           z-index: 1; /* Set a higher z-index to ensure it appears above other elements */
       }
+      p{
+        color: black;
+      }
         .notification-item {
             padding: 12px;
             border-bottom: 1px solid #e0e0e0;
@@ -79,7 +82,24 @@
         .notification-container:hover .notification-dropdown {
             display: block;
         }
-        
+        .notification-dot {
+          position: relative;
+          display: inline-block;
+      }
+  
+      .notification-dot::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 7px;
+          height: 7px;
+          background-color: red;
+          border-radius: 50%;
+      }
+      .pointer {
+        cursor: pointer;
+      }
     </style>
     {% block style %} {% endblock %}
   </head>
@@ -92,21 +112,27 @@
           <span style="color:green;"><b>Ziauddin University</b> </span>
         </a>
         <div class="notification-container">
-          <i class="fas fa-bell" id="notification-icon"></i>
-          <div class="notification-dropdown" id="notification-dropdown">
-              <div class="notification-item">
-                {%if notifications %}
-                {%for noti_classroom in noti_classrooms%}
-                {%for notification in notifications%}
-                  <p> new {{notification.content_type}} uploaded in {{noti_classroom}} classroom <b>({{notification.created_at}})</b></p>
-                  {%endfor%}
-                  {%endfor%}
-                  {%else%}
-                  <p>No Notifications yet !</p>
-                  {%endif%}
-              </div>
-            
+          <div {%if unread_notifications %} class="notification-dot" {%endif%}>
+            <i class="fas fa-bell pointer" id="notification-icon"></i>
+        </div>
+         
+        <div class="notification-dropdown" id="notification-dropdown">
+          <div class="notification-item">
+              {% if notifications %}
+              
+              {% for notification in notifications %}
+                  {% comment %} {% if notification.is_read == False %}
+                      <p style='color: blue'> new {{notification.content_type}} uploaded in {{notification.classroom}} classroom <b>({{notification.created_at}})</b></p>
+                  {% else %}
+                      <p style='color: black'> new {{notification.content_type}} uploaded in {{notification.classroom}} classroom <b>({{notification.created_at}})</b></p>
+                  {% endif %} {% endcomment %}
+                  <p style='color: black'> new {{notification.content_type}} uploaded in {{notification.classroom}} classroom <b>({{notification.created_at}})</b></p>
+              {% endfor %}
+              {% else %}
+              <p style="color:black">No Notifications yet!</p>
+              {% endif %}
           </div>
+      </div>
       </div>
       
         <ul class="navbar-nav ml-auto">
@@ -251,6 +277,8 @@
         dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
     });
 </script>
+
+  
 </body>
 
 </html>

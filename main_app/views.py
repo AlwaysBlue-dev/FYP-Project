@@ -106,12 +106,20 @@ def stu_dashboard_view(request):
             classrooms = Classroom.objects.filter(
                 class_id__in=[jc.classroom.class_id for jc in joined_classrooms])
 
-            student_notificaitons = PushNotification.objects.filter(student_id=stu_data[0].student_id)
-            if student_notificaitons:
-                noti_classrooms = Classroom.objects.filter(class_id = student_notificaitons[0].classroom_id)
-                context = {'stu_data': stu_data, 'classrooms': classrooms, 'notifications':student_notificaitons, 'noti_classrooms':noti_classrooms}
+            student_notifications = PushNotification.objects.filter(student_id=stu_data[0].student_id)
+            if student_notifications:
+                # noti_classrooms = Classroom.objects.filter(class_id = student_notificaitons[0].classroom_id)
+                unread_notifications = [noti for noti in student_notifications if noti.is_read == False]
+                # Reverse the order of notifications
+                student_notifications = student_notifications.order_by('-created_at')
+                if unread_notifications:
+                    context = {'stu_data': stu_data, 'classrooms': classrooms, 'notifications':student_notifications, 'unread_notifications':unread_notifications}
+                else:
+                    context = {'stu_data': stu_data, 'classrooms': classrooms, 'notifications':student_notifications}
+               
             else:
                 context = {'stu_data': stu_data, 'classrooms': classrooms}
+
             
         else:
             # Code for rendering the student dashboard
@@ -235,6 +243,16 @@ def stu_profile(request):
             context = {
                 'stu_data': stu_data,
             }
+
+        student_notifications = PushNotification.objects.filter(student_id=stu_data[0].student_id)
+        if student_notifications:
+            # noti_classrooms = Classroom.objects.filter(class_id = student_notificaitons[0].classroom_id)
+            unread_notifications = [noti for noti in student_notifications if noti.is_read == False]
+            # Reverse the order of notifications
+            student_notifications = student_notifications.order_by('-created_at')
+            if unread_notifications:
+                context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+
 
     # Code for rendering the teacher dashboard
     return render(request, 'student/stu_profile.html', context)
@@ -725,6 +743,16 @@ def stu_classroom_dashboard(request):
 
         context = {'stu_data': stu_data, 'joined_classrooms': joined_classrooms,
                    'classrooms': classrooms, }
+
+        student_notifications = PushNotification.objects.filter(student_id=stu_data[0].student_id)
+        if student_notifications:
+            # noti_classrooms = Classroom.objects.filter(class_id = student_notificaitons[0].classroom_id)
+            unread_notifications = [noti for noti in student_notifications if noti.is_read == False]
+            # Reverse the order of notifications
+            student_notifications = student_notifications.order_by('-created_at')
+            if unread_notifications:
+                context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+
         return render(request, 'student/classroom_dashboard.html', context)
 
 
@@ -810,6 +838,16 @@ def stu_classroom_detail(request, joined_classroom_id):
         context = {'classrooms': classrooms, 'stu_data': stu_data,
                    'lectures': lectures, 'quiz': quiz, 'assignment': assignment, 'announcement': announcement,
                    'joined_classrooms': joined_classrooms, 'fac_name': fac_name}
+        
+        student_notifications = PushNotification.objects.filter(student_id=stu_data[0].student_id)
+        if student_notifications:
+            # noti_classrooms = Classroom.objects.filter(class_id = student_notificaitons[0].classroom_id)
+            unread_notifications = [noti for noti in student_notifications if noti.is_read == False]
+            # Reverse the order of notifications
+            student_notifications = student_notifications.order_by('-created_at')
+            if unread_notifications:
+                context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+
         return render(request, 'student/classroom_detail.html', context, )
 
 
@@ -826,6 +864,15 @@ def stu_lectures_view(request, joined_classroom_id):
             'classroom': classroom,
             'lectures': lectures
         }
+        student_notifications = PushNotification.objects.filter(student_id=stu_data[0].student_id)
+        if student_notifications:
+            # noti_classrooms = Classroom.objects.filter(class_id = student_notificaitons[0].classroom_id)
+            unread_notifications = [noti for noti in student_notifications if noti.is_read == False]
+            # Reverse the order of notifications
+            student_notifications = student_notifications.order_by('-created_at')
+            if unread_notifications:
+                context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+
         return render(request, 'student/lectures_view.html', context)
 
 
@@ -839,6 +886,16 @@ def stu_quiz_view(request, joined_classroom_id):
 
         context = {'stu_data': stu_data,
                    'quizzes': quizzes}
+        
+        student_notifications = PushNotification.objects.filter(student_id=stu_data[0].student_id)
+        if student_notifications:
+            # noti_classrooms = Classroom.objects.filter(class_id = student_notificaitons[0].classroom_id)
+            unread_notifications = [noti for noti in student_notifications if noti.is_read == False]
+            # Reverse the order of notifications
+            student_notifications = student_notifications.order_by('-created_at')
+            if unread_notifications:
+                context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+
         return render(request, 'student/quiz_view.html', context)
 
 
@@ -861,6 +918,16 @@ def stu_view_quiz_result(request, quiz_id, joined_classroom_id):
                 'stu_data': stu_data,
                 'error_msg': 'You have not submitted the quiz yet.',
             }
+
+        student_notifications = PushNotification.objects.filter(student_id=stu_data[0].student_id)
+        if student_notifications:
+            # noti_classrooms = Classroom.objects.filter(class_id = student_notificaitons[0].classroom_id)
+            unread_notifications = [noti for noti in student_notifications if noti.is_read == False]
+            # Reverse the order of notifications
+            student_notifications = student_notifications.order_by('-created_at')
+            if unread_notifications:
+                context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+
 
     return render(request, 'student/stu_quiz_result.html', context)
 
@@ -912,6 +979,15 @@ def stu_quiz_submission(request, quiz_id, joined_classroom_id):
             'quizzes_submission': QuizSubmission.objects.filter(classroom_id=joined_classroom_id, quiz=quiz_id, student=student),
             'form': form,
         }
+        student_notifications = PushNotification.objects.filter(student_id=stu_data[0].student_id)
+        if student_notifications:
+            # noti_classrooms = Classroom.objects.filter(class_id = student_notificaitons[0].classroom_id)
+            unread_notifications = [noti for noti in student_notifications if noti.is_read == False]
+            # Reverse the order of notifications
+            student_notifications = student_notifications.order_by('-created_at')
+            if unread_notifications:
+                context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+
         return render(request, 'student/quiz_submission.html', context)
 
 
@@ -942,6 +1018,16 @@ def stu_assignment_view(request, joined_classroom_id):
         stu_data = Student.objects.filter(user_id=user_id)
         context = {'stu_data': stu_data,
                    'assignments': assignments}
+        
+        student_notifications = PushNotification.objects.filter(student_id=stu_data[0].student_id)
+        if student_notifications:
+            # noti_classrooms = Classroom.objects.filter(class_id = student_notificaitons[0].classroom_id)
+            unread_notifications = [noti for noti in student_notifications if noti.is_read == False]
+            # Reverse the order of notifications
+            student_notifications = student_notifications.order_by('-created_at')
+            if unread_notifications:
+                context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+
         return render(request, 'student/assignment_view.html', context)
 
 
@@ -965,6 +1051,16 @@ def stu_view_assignment_result(request, assign_id, joined_classroom_id):
                 'stu_data': stu_data,
                 'error_msg': 'You have not submitted the quiz yet.',
             }
+
+        student_notifications = PushNotification.objects.filter(student_id=stu_data[0].student_id)
+        if student_notifications:
+            # noti_classrooms = Classroom.objects.filter(class_id = student_notificaitons[0].classroom_id)
+            unread_notifications = [noti for noti in student_notifications if noti.is_read == False]
+            # Reverse the order of notifications
+            student_notifications = student_notifications.order_by('-created_at')
+            if unread_notifications:
+                context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+
 
     return render(request, 'student/stu_assignment_result.html', context)
 
@@ -1016,6 +1112,15 @@ def stu_assignment_submission(request, assign_id, joined_classroom_id):
             'assignments_submission': AssignmentSubmission.objects.filter(classroom_id=joined_classroom_id, assignment=assign_id, student=student),
             'form': form,
         }
+        student_notifications = PushNotification.objects.filter(student_id=stu_data[0].student_id)
+        if student_notifications:
+            # noti_classrooms = Classroom.objects.filter(class_id = student_notificaitons[0].classroom_id)
+            unread_notifications = [noti for noti in student_notifications if noti.is_read == False]
+            # Reverse the order of notifications
+            student_notifications = student_notifications.order_by('-created_at')
+            if unread_notifications:
+                context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+
         return render(request, 'student/assignment_submission.html', context)
 
 
@@ -1049,6 +1154,15 @@ def stu_announcement_view(request, joined_classroom_id):
             'stu_data': stu_data,
             'announcements': announcements,
         }
+        student_notifications = PushNotification.objects.filter(student_id=stu_data[0].student_id)
+        if student_notifications:
+            # noti_classrooms = Classroom.objects.filter(class_id = student_notificaitons[0].classroom_id)
+            unread_notifications = [noti for noti in student_notifications if noti.is_read == False]
+            # Reverse the order of notifications
+            student_notifications = student_notifications.order_by('-created_at')
+            if unread_notifications:
+                context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+
         return render(request, 'student/announcement_view.html', context)
 
 
@@ -1657,7 +1771,6 @@ def stu_view_result(request):
             result_data = cursor.fetchall()
 
         # print("Result Data:", result_data)  # Debug print
-
         context = {
             'columns': columns,
             'stu_data': stu_data,
@@ -1665,6 +1778,16 @@ def stu_view_result(request):
             'result_data': result_data,
             'stu_semester':stu_semester,
         }
+
+        student_notifications = PushNotification.objects.filter(student_id=stu_data[0].student_id)
+        if student_notifications:
+            # noti_classrooms = Classroom.objects.filter(class_id = student_notificaitons[0].classroom_id)
+            unread_notifications = [noti for noti in student_notifications if noti.is_read == False]
+            # Reverse the order of notifications
+            student_notifications = student_notifications.order_by('-created_at')
+            if unread_notifications:
+                context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+
         return render(request, 'student/result_view.html', context)
 
 # # # # Student Attendance View Section # # # #
@@ -1715,6 +1838,16 @@ def stu_view_attendance(request):
                 print(result_data)
         else:
             print("Not Hello")
+
+        
+        student_notifications = PushNotification.objects.filter(student_id=stu_data[0].student_id)
+        if student_notifications:
+            # noti_classrooms = Classroom.objects.filter(class_id = student_notificaitons[0].classroom_id)
+            unread_notifications = [noti for noti in student_notifications if noti.is_read == False]
+            # Reverse the order of notifications
+            student_notifications = student_notifications.order_by('-created_at')
+            if unread_notifications:
+                context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
         
         return render(request, 'student/attendance_view.html', context)
 
