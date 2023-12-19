@@ -1701,9 +1701,13 @@ def view_result(request):
     else:
         user_id = request.session.get('user_id')
         fac_data = Faculty.objects.filter(user_id=user_id)
+
+        assigned_courses = AssignCourse.objects.filter(
+            faculty_id=fac_data[0].fac_id, active=True)
         
         # Fetch upload_result data for the logged-in user
-        upload_result_data = UploadResult.objects.filter(fac_id=fac_data[0].fac_id)
+        upload_result_data = UploadResult.objects.filter(fac_id=fac_data[0].fac_id,
+                             course__in=[assigned_course.assign_course.course_name for assigned_course in assigned_courses])
 
         context = {
             'fac_data': fac_data,
