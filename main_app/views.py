@@ -252,7 +252,8 @@ def stu_profile(request):
             student_notifications = student_notifications.order_by('-created_at')
             if unread_notifications:
                 context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
-
+            else:
+                context.update({'notifications':student_notifications})
 
     # Code for rendering the teacher dashboard
     return render(request, 'student/stu_profile.html', context)
@@ -752,6 +753,8 @@ def stu_classroom_dashboard(request):
             student_notifications = student_notifications.order_by('-created_at')
             if unread_notifications:
                 context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+            else:
+                context.update({'notifications':student_notifications})
 
         return render(request, 'student/classroom_dashboard.html', context)
 
@@ -847,6 +850,8 @@ def stu_classroom_detail(request, joined_classroom_id):
             student_notifications = student_notifications.order_by('-created_at')
             if unread_notifications:
                 context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+            else:
+                context.update({'notifications':student_notifications})
 
         return render(request, 'student/classroom_detail.html', context, )
 
@@ -872,6 +877,8 @@ def stu_lectures_view(request, joined_classroom_id):
             student_notifications = student_notifications.order_by('-created_at')
             if unread_notifications:
                 context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+            else:
+                context.update({'notifications':student_notifications})
 
         return render(request, 'student/lectures_view.html', context)
 
@@ -895,6 +902,8 @@ def stu_quiz_view(request, joined_classroom_id):
             student_notifications = student_notifications.order_by('-created_at')
             if unread_notifications:
                 context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+            else:
+                context.update({'notifications':student_notifications})
 
         return render(request, 'student/quiz_view.html', context)
 
@@ -927,7 +936,8 @@ def stu_view_quiz_result(request, quiz_id, joined_classroom_id):
             student_notifications = student_notifications.order_by('-created_at')
             if unread_notifications:
                 context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
-
+            else:
+                context.update({'notifications':student_notifications})
 
     return render(request, 'student/stu_quiz_result.html', context)
 
@@ -987,6 +997,8 @@ def stu_quiz_submission(request, quiz_id, joined_classroom_id):
             student_notifications = student_notifications.order_by('-created_at')
             if unread_notifications:
                 context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+            else:
+                context.update({'notifications':student_notifications})
 
         return render(request, 'student/quiz_submission.html', context)
 
@@ -1027,6 +1039,8 @@ def stu_assignment_view(request, joined_classroom_id):
             student_notifications = student_notifications.order_by('-created_at')
             if unread_notifications:
                 context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+            else:
+                context.update({'notifications':student_notifications})
 
         return render(request, 'student/assignment_view.html', context)
 
@@ -1060,7 +1074,8 @@ def stu_view_assignment_result(request, assign_id, joined_classroom_id):
             student_notifications = student_notifications.order_by('-created_at')
             if unread_notifications:
                 context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
-
+            else:
+                context.update({'notifications':student_notifications})
 
     return render(request, 'student/stu_assignment_result.html', context)
 
@@ -1120,6 +1135,8 @@ def stu_assignment_submission(request, assign_id, joined_classroom_id):
             student_notifications = student_notifications.order_by('-created_at')
             if unread_notifications:
                 context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+            else:
+                context.update({'notifications':student_notifications})
 
         return render(request, 'student/assignment_submission.html', context)
 
@@ -1162,6 +1179,8 @@ def stu_announcement_view(request, joined_classroom_id):
             student_notifications = student_notifications.order_by('-created_at')
             if unread_notifications:
                 context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
+            else:
+                context.update({'notifications':student_notifications})
 
         return render(request, 'student/announcement_view.html', context)
 
@@ -1791,7 +1810,9 @@ def stu_view_result(request):
             student_notifications = student_notifications.order_by('-created_at')
             if unread_notifications:
                 context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
-
+            else:
+                context.update({'notifications':student_notifications})
+                
         return render(request, 'student/result_view.html', context)
 
 # # # # Student Attendance View Section # # # #
@@ -1852,7 +1873,9 @@ def stu_view_attendance(request):
             student_notifications = student_notifications.order_by('-created_at')
             if unread_notifications:
                 context.update({'notifications':student_notifications, 'unread_notifications':unread_notifications})
-        
+            else:
+                context.update({'notifications':student_notifications})
+
         return render(request, 'student/attendance_view.html', context)
 
 
