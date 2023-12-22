@@ -449,3 +449,14 @@ class UploadResult(models.Model):
 
     def __str__(self):
         return f"{self.fac.fac_name} upload {self.assessment_type} result of {self.course}"
+    
+
+class PLO(models.Model):
+    id = models.AutoField(primary_key=True)
+    programme = models.ForeignKey(DepartProgramme, on_delete=models.CASCADE)
+    plo_num = models.CharField(max_length=100, default="")
+    plo = models.CharField(max_length=255, default="")
+    plo_desc = models.CharField(max_length=255, default="")
+
+    def __str__(self):
+        return f"{self.programme} PLO - {self.plo} added"

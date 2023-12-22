@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from .models import LoginUser
 from .forms import ClassroomForm, LectureUploadForm, QuizUploadForm, AssignmentUploadForm, AnnouncementUploadForm, QuizSubmissionForm, AssignmentSubmissionForm
-from .models import Classroom, Faculty, Lecutre, Quiz, Assignment, Announcement, AssignCourse, Course, Student,  StudentJoinedClassroom,  QuizSubmission, AssignmentSubmission, Department, HOD, TotalBatche, StudentAttendance, DepartProgramme, FacultyJobDetail,  StudentRegisterCourse, AddCourseClo, MapCourseCloPlo, AddAssessmentClosPlo, UploadResult, PushNotification 
+from .models import Classroom, Faculty, Lecutre, Quiz, Assignment, Announcement, AssignCourse, Course, Student,  StudentJoinedClassroom,  QuizSubmission, AssignmentSubmission, Department, HOD, TotalBatche, StudentAttendance, DepartProgramme, FacultyJobDetail,  StudentRegisterCourse, AddCourseClo, MapCourseCloPlo, AddAssessmentClosPlo, UploadResult, PushNotification, PLO
 from django.contrib import messages
 import random
 import string
@@ -16,6 +16,7 @@ import json
 from django.http import JsonResponse,  HttpResponseBadRequest
 from django.db import connection
 import csv
+from django.core.mail import send_mail
 
 # Create your views here.
 def user_login(request):
@@ -490,9 +491,29 @@ def lectures_upload(request, classroom_id):
                     student=student,
                     content_type='lecture', 
                     content_id=lectures.first().lec_id,
-                    classroom_id = classroom
+                    classroom_id = classroom_id
                 )
+            # Fetch the emails of students in the classroom
+            student_emails = Student.objects.filter(student_id__in=students).values_list('student_email__user_email', flat=True)
+            
+            # Print recipient_list for debugging
+            # print('Recipient List:', list(student_emails))
+
+            # Send email to all students
+            subject = 'New Lecture Uploaded'
+            message = f'Dear student, a new lecture has been uploaded in {classroom.class_name} classroom.'
+            from_email = 'zutestemail2019@gmail.com' 
+            recipient_list = list(student_emails)
+
+            try:
+                send_mail(subject, message, from_email, recipient_list)
+                print('Email sent successfully!')
+            except Exception as e:
+                print('Email sending failed:', e)
+
+           
             messages.success(request, 'Lecture uploaded successfully!')
+
     else:
         form = LectureUploadForm()
 
@@ -537,6 +558,25 @@ def quiz_upload(request, classroom_id):
                     content_id=Quiz.objects.filter(classroom_id=classroom_id).first().quiz_id,
                     classroom_id = classroom_id
                 )
+            
+            # Fetch the emails of students in the classroom
+            student_emails = Student.objects.filter(student_id__in=students).values_list('student_email__user_email', flat=True)
+            
+            # Print recipient_list for debugging
+            # print('Recipient List:', list(student_emails))
+
+            # Send email to all students
+            subject = 'New Quiz Uploaded'
+            message = f'Dear student, a new quiz has been uploaded in {classroom.class_name} classroom.'
+            from_email = 'zutestemail2019@gmail.com' 
+            recipient_list = list(student_emails)
+
+            try:
+                send_mail(subject, message, from_email, recipient_list)
+                print('Email sent successfully!')
+            except Exception as e:
+                print('Email sending failed:', e)
+
     else:
         form = QuizUploadForm()
 
@@ -579,8 +619,27 @@ def assignment_upload(request, classroom_id):
                     student=student,
                     content_type='assignment', 
                     content_id=Assignment.objects.filter(assign_id=classroom_id).first().assign_id,
-                    classroom_id = classroom
+                    classroom_id = classroom_id
                 )
+            
+            # Fetch the emails of students in the classroom
+            student_emails = Student.objects.filter(student_id__in=students).values_list('student_email__user_email', flat=True)
+            
+            # Print recipient_list for debugging
+            # print('Recipient List:', list(student_emails))
+
+            # Send email to all students
+            subject = 'New Assignment Uploaded'
+            message = f'Dear student, a new assignment has been uploaded in {classroom.class_name} classroom.'
+            from_email = 'zutestemail2019@gmail.com' 
+            recipient_list = list(student_emails)
+
+            try:
+                send_mail(subject, message, from_email, recipient_list)
+                print('Email sent successfully!')
+            except Exception as e:
+                print('Email sending failed:', e)
+
     else:
         form = AssignmentUploadForm()
 
@@ -623,8 +682,27 @@ def announcement_upload(request, classroom_id):
                     student=student,
                     content_type='announcement', 
                     content_id=Announcement.objects.filter(ann_id=classroom_id).first().ann_id,
-                    classroom_id = classroom
+                    classroom_id = classroom_id
                 )
+
+            # Fetch the emails of students in the classroom
+            student_emails = Student.objects.filter(student_id__in=students).values_list('student_email__user_email', flat=True)
+            
+            # Print recipient_list for debugging
+            # print('Recipient List:', list(student_emails))
+
+            # Send email to all students
+            subject = 'New Announcement Uploaded'
+            message = f'Dear student, a new announcement has been uploaded in {classroom.class_name} classroom.'
+            from_email = 'zutestemail2019@gmail.com' 
+            recipient_list = list(student_emails)
+
+            try:
+                send_mail(subject, message, from_email, recipient_list)
+                print('Email sent successfully!')
+            except Exception as e:
+                print('Email sending failed:', e)
+
     else:
         form = AssignmentUploadForm()
 
@@ -1402,6 +1480,27 @@ def update_attendance(request, attendance_id):
 
 # # # # Faculty Upload Result Section # # # #
 
+def plo_information(request):
+    if 'user_id' not in request.session:
+        return redirect('/login')
+    else:
+        user_id = request.session.get('user_id')
+        fac_data = Faculty.objects.filter(user_id=user_id)
+        assign_courses = AssignCourse.objects.filter(faculty__user_id=user_id)
+        programmes = DepartProgramme.objects.values_list("prog_name", flat=True)
+
+        selected_programme = request.GET.get('programme')
+        filtered_plos = PLO.objects.filter(programme_id__prog_name=selected_programme) if selected_programme else []
+
+        context = {
+            'fac_data': fac_data,
+            'assign_courses': assign_courses,
+            'programmes': programmes,
+            'selected_programme': selected_programme,
+            'filtered_plos': filtered_plos,
+        }
+
+        return render(request, 'faculty/plo_information.html', context)
 def add_clo(request):
     if 'user_id' not in request.session:
         return redirect('/login')
@@ -1877,5 +1976,4 @@ def stu_view_attendance(request):
                 context.update({'notifications':student_notifications})
 
         return render(request, 'student/attendance_view.html', context)
-
 

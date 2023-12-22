@@ -76,6 +76,8 @@ urlpatterns = [
     path('fac_dashboard/attendance/view_attendance/<int:course_id>/<int:fac_id>', views.view_attendance, name='view_attendance'),
     path('fac_dashboard/attendance/update_attendance/<int:attendance_id>', views.update_attendance, name='update_attendance'),
     
+    path('fac_dashboard/plo_information', views.plo_information, name='plo_information'),
+
     path('fac_dashboard/add_clo', views.add_clo, name='add_clo'),
 
     path('fac_dashboard/map_clo_plo', views.map_clo_plo, name='map_clo_plo'),
@@ -87,6 +89,8 @@ urlpatterns = [
     path('fac_dashboard/view_result', views.view_result, name='view_result'),
 
     path('fac_dashboard/export_csv', views.export_csv, name='export_csv'),
+
+
 
 
 

@@ -1,0 +1,126 @@
+{% extends 'faculty/fac_menu.html' %}
+{% load static %}
+
+{% block title %} PLO Information {% endblock %}
+
+{% block style %}
+<style>
+    /* Add any custom styles here */
+    .form-control {
+        background-color: #fff;
+    }
+
+    .question-card {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1), 0 6px 6px rgba(0,0,0,0.2);
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+
+    .question-card .card-header {
+        background-color: #f7f7f7;
+        border-radius: 10px 10px 0 0;
+        border-bottom: none;
+        padding: 20px 30px;
+        margin-bottom: 20px;
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    .question-card .form-row {
+        margin-bottom: 20px;
+    }
+
+    .question-card .form-group {
+        margin-bottom: 0;
+    }
+
+    .question-card .form-group label {
+        font-weight: 600;
+    }
+
+    .question-card .form-control {
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+        background-color: #f7f7f7;
+        padding: 15px;
+        font-size: 16px;
+        font-weight: 400;
+        color: #666;
+        height: auto;
+    }
+
+    /* Custom css for the question cards */
+    .card.question-card {
+        border: none;
+        /* background-color: #f8f9fa; */
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card.question-card .card-header {
+        background-color: #fff;
+        border-bottom: none;
+    }
+
+    .card.question-card .card-body {
+        padding: 1rem;
+    }
+
+    .card-deck .card:not(:last-child) {
+        margin-right: 1rem;
+    }
+
+    .remove-question-btn {
+        color: #dc3545;
+    }
+    th{
+        white-space:nowrap; 
+      }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class='container'>
+    <div class="card p-4 mt-3">
+        <form method="GET" enctype="multipart/form-data">
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <label for="input-programme" class="form-label">Programme:</label>
+                    <select name="programme" id="input-programme" class="form-control custom-select" required>
+                        <option value="" selected>-- Select a programme --</option>
+                        {% for programme in programmes %}
+                        <option value="{{ programme}}"{% if selected_programme == programme %}selected{% endif %}>{{ programme}}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-success mt-2">Filter</button>
+                </div>
+            </div>
+        </form>
+
+        {% if selected_programme %} 
+            <!-- Display PLOs in a table form based on the selected programme -->
+            <h2 class="text-center">PLOs for {{ selected_programme }}</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">PLO</th>
+                        <th scope="col">PLO Name</th>
+                        <th scope="col">PLO Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for plo in filtered_plos %}
+                        <tr>
+                            <td>{{ plo.plo_num }}</td>
+                            <td>{{ plo.plo }}</td>
+                            <td>{{ plo.plo_desc }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

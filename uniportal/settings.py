@@ -135,3 +135,19 @@ STATICFILES_DIRS = [
 
 MEDIA_ROOT= os.path.join(BASE_DIR, "media")
 MEDIA_URL="/media/"
+
+# Use SMTP for sending emails
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# SMTP Server Settings
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587  # Use the appropriate port for your SMTP server
+EMAIL_USE_TLS = True  # Use TLS if your SMTP server requires it
+Email_USE_SSL = False
+
+# SMTP Authentication (if required)
+EMAIL_HOST_USER = 'zutestemail2019@gmail.com'
+EMAIL_HOST_PASSWORD = 'amsj seum ydfv bbtx '
+
+# Default "From" address for emails sent by your application
+DEFAULT_FROM_EMAIL = 'zutestemail2019@gmail.com'
